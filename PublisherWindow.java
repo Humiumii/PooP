@@ -16,7 +16,6 @@ public class PublisherWindow extends Application {
         this.subscribers = subscribers;
         this.publisher = new MoviePublisher();
         
-        // Suscribir a todos los subscribers
         for (Subscriber subscriber : subscribers) {
             publisher.subscribe(subscriber);
         }
@@ -26,25 +25,20 @@ public class PublisherWindow extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Publisher - Subir Películas");
         
-        // Crear el contenedor principal con ScrollPane para manejar contenido largo
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.getStyleClass().add("sidebar");
         
-        // Configurar para que se expanda con la ventana
         VBox.setVgrow(root, Priority.ALWAYS);
         
-        // Título
         Label titleLabel = new Label("Subir Nueva Película");
         titleLabel.getStyleClass().add("sidebar-title");
         
-        // Crear un GridPane para organizar los campos de forma más limpia
         GridPane formGrid = new GridPane();
         formGrid.setHgap(10);
         formGrid.setVgap(15);
         formGrid.setPadding(new Insets(10));
         
-        // Configurar columnas para que se expandan
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setMinWidth(120);
         col1.setPrefWidth(120);
@@ -57,7 +51,6 @@ public class PublisherWindow extends Application {
         
         int row = 0;
         
-        // Campo título
         Label titleFieldLabel = new Label("Título:");
         titleFieldLabel.getStyleClass().add("stat-label");
         TextField titleField = new TextField();
@@ -67,7 +60,6 @@ public class PublisherWindow extends Application {
         formGrid.add(titleFieldLabel, 0, row);
         formGrid.add(titleField, 1, row++);
         
-        // Campo imagen con botón
         Label imageFieldLabel = new Label("Imagen:");
         imageFieldLabel.getStyleClass().add("stat-label");
         HBox imageBox = new HBox(10);
@@ -94,7 +86,6 @@ public class PublisherWindow extends Application {
         formGrid.add(imageFieldLabel, 0, row);
         formGrid.add(imageBox, 1, row++);
         
-        // Campo género
         Label genreFieldLabel = new Label("Género:");
         genreFieldLabel.getStyleClass().add("stat-label");
         ComboBox<String> genreCombo = new ComboBox<>();
@@ -105,7 +96,6 @@ public class PublisherWindow extends Application {
         formGrid.add(genreFieldLabel, 0, row);
         formGrid.add(genreCombo, 1, row++);
         
-        // Campo año
         Label yearFieldLabel = new Label("Año:");
         yearFieldLabel.getStyleClass().add("stat-label");
         TextField yearField = new TextField();
@@ -115,7 +105,6 @@ public class PublisherWindow extends Application {
         formGrid.add(yearFieldLabel, 0, row);
         formGrid.add(yearField, 1, row++);
         
-        // Campo descripción
         Label descFieldLabel = new Label("Descripción:");
         descFieldLabel.getStyleClass().add("stat-label");
         TextArea descriptionArea = new TextArea();
@@ -126,7 +115,6 @@ public class PublisherWindow extends Application {
         formGrid.add(descFieldLabel, 0, row);
         formGrid.add(descriptionArea, 1, row++);
         
-        // Campo distribuidora
         Label distFieldLabel = new Label("Distribuidora:");
         distFieldLabel.getStyleClass().add("stat-label");
         ComboBox<String> distributorCombo = new ComboBox<>();
@@ -137,7 +125,6 @@ public class PublisherWindow extends Application {
         formGrid.add(distFieldLabel, 0, row);
         formGrid.add(distributorCombo, 1, row++);
         
-        // Sección para nueva distribuidora
         VBox newDistributorSection = new VBox(10);
         newDistributorSection.getStyleClass().add("review-form");
         
@@ -167,7 +154,6 @@ public class PublisherWindow extends Application {
         newDistBox.getChildren().addAll(newDistributorField, addDistributorButton);
         newDistributorSection.getChildren().addAll(newDistLabel, newDistBox);
         
-        // Botón de publicar
         Button publishButton = new Button("Publicar Película");
         publishButton.getStyleClass().add("add-review-btn");
         publishButton.setMaxWidth(Double.MAX_VALUE);
@@ -190,7 +176,6 @@ public class PublisherWindow extends Application {
             
             showAlert("Éxito", "Película publicada exitosamente!");
             
-            // Limpiar campos
             titleField.clear();
             imageUrlField.clear();
             genreCombo.setValue(null);
@@ -199,7 +184,6 @@ public class PublisherWindow extends Application {
             distributorCombo.setValue(null);
         });
         
-        // Agregar todo al contenedor principal
         root.getChildren().addAll(
             titleLabel,
             formGrid,
@@ -207,13 +191,11 @@ public class PublisherWindow extends Application {
             publishButton
         );
         
-        // Crear ScrollPane para manejar ventanas pequeñas
         ScrollPane scrollPane = new ScrollPane(root);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
         scrollPane.getStyleClass().add("subscriber-root");
         
-        // Configurar la escena con tamaño mínimo y máximo
         Scene scene = new Scene(scrollPane, 600, 700);
         scene.getStylesheets().add("modern.css");
         

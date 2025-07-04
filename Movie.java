@@ -3,14 +3,13 @@ import java.util.List;
 
 public class Movie {
     private String title;
-    private String imageUrl; // URL o ruta de la imagen
-    private String genre;    // Nuevo campo
-    private String year;     // Nuevo campo
-    private String description; // Nuevo campo
-    private String distributor; // Nuevo campo para distribuidora
-    private List<Review> reviews; // Lista de reseñas con calificaciones
+    private String imageUrl;
+    private String genre;
+    private String year;
+    private String description;
+    private String distributor;
+    private List<Review> reviews;
 
-    // Constructor actualizado
     public Movie(String title, String imageUrl, String genre, String year, String description, String distributor) {
         this.title = title;
         this.imageUrl = imageUrl;
@@ -21,12 +20,10 @@ public class Movie {
         this.reviews = new ArrayList<>();
     }
 
-    // Constructor anterior para compatibilidad
     public Movie(String title, String imageUrl, String genre, String year, String description) {
         this(title, imageUrl, genre, year, description, null);
     }
 
-    // Constructor anterior para compatibilidad
     public Movie(String title, String imageUrl) {
         this(title, imageUrl, null, null, null, null);
     }
@@ -80,7 +77,6 @@ public class Movie {
         return reviews.size();
     }
 
-    // Clase interna para representar una reseña
     public static class Review {
         private String comment;
         private int rating;

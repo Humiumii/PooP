@@ -1,5 +1,5 @@
 # Cambia esta ruta a donde realmente está tu javafx-sdk
-PATH_TO_FX=C:/Users/rahar/Downloads/openjfx-24.0.1_windows-x64_bin-sdk/javafx-sdk-24.0.1/lib
+PATH_TO_FX="/Users/ignacio/Downloads/javafx-sdk-24.0.1/lib"
 SRC=.
 BIN=./bin
 

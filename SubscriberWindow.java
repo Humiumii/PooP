@@ -19,8 +19,8 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
     private UserManager userManager;
     private Stage primaryStage;
     private VBox mainRoot;
-    private Movie selectedMovie = null; // Para saber si estamos en detalle
-    private VBox availableDistributorsBox; // Referencia para refrescar
+    private Movie selectedMovie = null;
+    private VBox availableDistributorsBox;
 
     public SubscriberWindow() {
         userManager = UserManager.getInstance();
@@ -40,7 +40,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
 
         TabPane tabPane = new TabPane();
 
-        // Pestaña de películas
         Tab moviesTab = new Tab("Películas");
         moviesTab.setClosable(false);
 
@@ -48,6 +47,7 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         moviesRoot.setPadding(new Insets(20));
 
         Label moviesTitle = new Label("Películas Disponibles");
+        moviesTitle.getStyleClass().add("white-label");
         moviesTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         moviesContainer = new VBox(10);
@@ -58,7 +58,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         moviesRoot.getChildren().addAll(moviesTitle, moviesScrollPane);
         moviesTab.setContent(moviesRoot);
 
-        // Pestaña de suscripciones
         Tab subscriptionsTab = new Tab("Suscripciones");
         subscriptionsTab.setClosable(false);
 
@@ -69,6 +68,7 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         subscriptionsTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         Label availableLabel = new Label("Distribuidoras Disponibles:");
+        availableLabel.getStyleClass().add("white-label");
         availableLabel.setStyle("-fx-font-weight: bold;");
 
         availableDistributorsBox = createAvailableDistributorsBox();
@@ -82,13 +82,13 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
             if (!newDist.isEmpty()) {
                 Distributor.addDistributor(newDist);
                 newDistField.clear();
-                // Refresca la lista de distribuidoras en todos los usuarios
                 refreshAvailableDistributors(subscriptionsRoot, availableDistributorsBox);
             }
         });
         addDistBox.getChildren().addAll(newDistField, addDistBtn);
 
         Label subscribedLabel = new Label("Mis Suscripciones:");
+        subscribedLabel.getStyleClass().add("white-label");
         subscribedLabel.setStyle("-fx-font-weight: bold;");
 
         subscriptionsContainer = new VBox(5);
@@ -112,14 +112,12 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Registrar como listener de cambios de distribuidoras
         Distributor.addListener(this);
 
         updateSubscriptionsView();
         updateMoviesView();
     }
 
-    // --- NUEVO: Método para refrescar la lista de distribuidoras en la pestaña ---
     private void refreshAvailableDistributors(VBox subscriptionsRoot, VBox oldBox) {
         int idx = subscriptionsRoot.getChildren().indexOf(oldBox);
         VBox newBox = createAvailableDistributorsBox();
@@ -138,7 +136,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         HBox userControls = new HBox(10);
 
         if (!userManager.isLoggedIn()) {
-            // Mostrar login
             TextField usernameField = new TextField();
             usernameField.setPromptText("Nombre de usuario");
             usernameField.getStyleClass().add("input-field");
@@ -156,7 +153,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
                 }
             });
 
-            // ComboBox para usuarios registrados
             ComboBox<String> usersCombo = new ComboBox<>();
             usersCombo.getItems().addAll(userManager.getRegisteredUsers());
             usersCombo.setPromptText("Usuarios registrados");
@@ -169,12 +165,11 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
             });
 
             userControls.getChildren().addAll(
-                new Label("Usuario:"), usernameField,
-                new Label("O seleccionar:"), usersCombo,
+                createStyledLabel("Usuario:"), usernameField,
+                createStyledLabel("O seleccionar:"), usersCombo,
                 loginButton
             );
         } else {
-            // Mostrar logout
             Button logoutButton = new Button("Cerrar Sesión");
             logoutButton.getStyleClass().add("add-review-btn");
             logoutButton.setOnAction(e -> {
@@ -216,8 +211,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
 
     @Override
     public void notify(Movie movie) {
-        // Ya no necesitamos agregar la película aquí porque se almacena globalmente
-        // Solo actualizamos la vista
         updateMoviesView();
         System.out.println(name + " ha sido notificado de una nueva película: " + movie.getTitle());
     }
@@ -298,7 +291,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
                 card.getStyleClass().add("movie-card");
                 card.setAlignment(javafx.geometry.Pos.TOP_CENTER);
 
-                // Imagen cuadrada
                 ImageView poster = new ImageView();
                 try {
                     String imagePath = movie.getImageUrl();
@@ -335,7 +327,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
 
                 card.getChildren().addAll(poster, titleLabel, ratingLabel);
 
-                // Al hacer click, mostrar detalle en el mismo contenedor
                 card.setOnMouseClicked(e -> showMovieDetailInMain(movie));
 
                 int col = i % colCount;
@@ -347,7 +338,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         }
     }
 
-    // Muestra el detalle de la película en la misma vista principal
     private void showMovieDetailInMain(Movie movie) {
         selectedMovie = movie;
         moviesContainer.getChildren().clear();
@@ -355,7 +345,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         moviesContainer.getChildren().add(card);
     }
 
-    // Botón para volver al grid principal
     private Button createBackButton() {
         Button backBtn = new Button("← Volver");
         backBtn.getStyleClass().add("btn-primary");
@@ -366,22 +355,18 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         return backBtn;
     }
 
-    // Vista de detalle de película con actualización en vivo de reseñas
     private VBox createMovieDetailCard(Movie movie) {
         VBox card = new VBox(10);
         card.getStyleClass().add("movie-detail-card");
 
-        // Botón volver
         card.getChildren().add(createBackButton());
 
-        // Título e imagen cuadrada
         HBox titleImageBox = new HBox(20);
 
         VBox titleInfoBox = new VBox(5);
         Label titleLabel = new Label(movie.getTitle());
         titleLabel.getStyleClass().add("movie-title");
 
-        // Calificación promedio (actualizable)
         Label ratingLabel = new Label();
         ratingLabel.getStyleClass().add("movie-rating");
 
@@ -404,7 +389,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
 
         titleInfoBox.getChildren().addAll(titleLabel, ratingLabel, movieInfoBox);
 
-        // Imagen cuadrada
         ImageView imageView = new ImageView();
         try {
             String imagePath = movie.getImageUrl();
@@ -433,7 +417,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
 
         titleImageBox.getChildren().addAll(imageView, titleInfoBox);
 
-        // Descripción
         VBox descriptionBox = new VBox(5);
         descriptionBox.getStyleClass().add("green-box");
         Label descriptionLabel = new Label(movie.getDescription());
@@ -441,7 +424,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         descriptionLabel.setWrapText(true);
         descriptionBox.getChildren().add(descriptionLabel);
 
-        // Reseñas existentes (actualizable)
         VBox reviewsBox = new VBox(5);
         reviewsBox.getStyleClass().add("review-list");
         Label reviewsTitle = new Label("Reseñas:");
@@ -468,7 +450,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         };
         updateReviews.run();
 
-        // Área para agregar nueva reseña
         VBox addReviewBox = new VBox(5);
         addReviewBox.getStyleClass().add("review-form");
         Label addReviewTitle = new Label("Agregar reseña:");
@@ -503,7 +484,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
                     addReview(movie, comment, rating);
                     reviewArea.clear();
                     ratingSpinner.getValueFactory().setValue(5);
-                    // Actualizar reseñas y promedio en vivo
                     updateReviews.run();
                     updateRating.run();
                 }
@@ -523,10 +503,8 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         return card;
     }
 
-    // Implementa el método del listener
     @Override
     public void onDistributorsChanged() {
-        // Refresca la lista de distribuidoras disponibles
         if (availableDistributorsBox != null && availableDistributorsBox.getParent() != null) {
             VBox parent = (VBox) availableDistributorsBox.getParent();
             int idx = parent.getChildren().indexOf(availableDistributorsBox);
@@ -536,7 +514,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
     }
 
     private Image createDefaultImage() {
-        // Crear una imagen por defecto simple
         return new Image("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", 150, 200, false, true);
     }
 
@@ -548,7 +525,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         alert.showAndWait();
     }
 
-    // Agrega este método si no existe
     private void updateSubscriptionsView() {
         subscriptionsContainer.getChildren().clear();
 
@@ -575,7 +551,6 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
         }
     }
 
-    // Método para crear la lista de distribuidoras disponibles (para poder refrescarla)
     private VBox createAvailableDistributorsBox() {
         VBox availableDistributors = new VBox(5);
         for (String distributor : Distributor.getAvailableDistributors()) {
@@ -591,6 +566,12 @@ public class SubscriberWindow extends Application implements Subscriber, Distrib
             availableDistributors.getChildren().add(distributorBox);
         }
         return availableDistributors;
+    }
+
+    private Label createStyledLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("white-label");
+        return label;
     }
 }
 

@@ -7,7 +7,7 @@ public class UserManager {
     private static UserManager instance;
     private Set<String> registeredUsers;
     private String currentUser;
-    private Map<String, Set<String>> userSubscriptions; // Usuario -> Set de distribuidoras
+    private Map<String, Set<String>> userSubscriptions;
     
     private UserManager() {
         registeredUsers = new HashSet<>();
@@ -27,7 +27,6 @@ public class UserManager {
             registeredUsers.add(username.trim());
             currentUser = username.trim();
             
-            // Inicializar suscripciones para usuario nuevo
             if (!userSubscriptions.containsKey(currentUser)) {
                 userSubscriptions.put(currentUser, new HashSet<>());
             }
@@ -82,3 +81,4 @@ public class UserManager {
         return userSubscriptions.getOrDefault(currentUser, new HashSet<>()).contains(distributor);
     }
 }
+

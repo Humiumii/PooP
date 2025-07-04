@@ -14,7 +14,6 @@ public class User implements Subscriber {
 
     @Override
     public void notify(Movie movie) {
-        // Solo notificar si está suscrito a la distribuidora de la película
         if (movie.getDistributor() == null || UserManager.getInstance().isCurrentUserSubscribedTo(movie.getDistributor())) {
             System.out.println(name + " ha sido notificado de una nueva película: " + movie.getTitle());
         }

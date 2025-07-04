@@ -8,7 +8,6 @@ public class Distributor {
     private static Set<DistributorListener> listeners = new HashSet<>();
 
     static {
-        // Distribuidoras predefinidas
         availableDistributors.add("Netflix");
         availableDistributors.add("Disney");
         availableDistributors.add("Warner Bros");
@@ -24,7 +23,6 @@ public class Distributor {
     public static void addDistributor(String distributor) {
         if (!availableDistributors.contains(distributor)) {
             availableDistributors.add(distributor);
-            // Notificar a los listeners
             for (DistributorListener l : listeners) {
                 l.onDistributorsChanged();
             }
@@ -35,7 +33,6 @@ public class Distributor {
         return availableDistributors.contains(distributor);
     }
 
-    // Métodos para registrar y quitar listeners
     public static void addListener(DistributorListener listener) {
         listeners.add(listener);
     }

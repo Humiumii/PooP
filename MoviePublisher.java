@@ -16,12 +16,9 @@ public class MoviePublisher implements Publisher {
 
     @Override
     public void publish(Movie movie) {
-        // Almacenar la película globalmente primero
         MovieStorage.getInstance().addMovie(movie);
         
-        // Luego notificar a los subscribers que pueden verla
         for (Subscriber s : subscribers) {
-            // Solo notificar si el subscriber puede ver la película
             if (s.canViewMovie(movie)) {
                 s.notify(movie);
             }
@@ -38,3 +35,4 @@ public class MoviePublisher implements Publisher {
         return availableMovies;
     }
 }
+        

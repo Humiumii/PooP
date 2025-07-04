@@ -31,6 +31,11 @@
     -fx-text-fill: #b0b3b8;
 }
 
+/* Etiquetas con texto blanco */
+.white-label {
+    -fx-text-fill: #fff;
+}
+
 /* Botones principales */
 .btn-primary, .add-review-btn {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e50914 0%, #b0060f 100%);
@@ -235,4 +240,42 @@
 /* Ajustes generales */
 .label {
     -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+/* Make combo box text white for genres and distributors */
+.combo-box .list-cell {
+    -fx-text-fill: white;
+}
+
+.combo-box > .list-cell {
+    -fx-text-fill: white;
+}
+
+/* Make combo box dropdown items visible */
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: black;
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #e3f2fd;
+}
+
+/* Make description text area have dark background with white text */
+.input-field.text-area {
+    -fx-control-inner-background: #2d3748;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #a0aec0;
+}
+
+/* Ensure all input fields have proper styling */
+.input-field {
+    -fx-control-inner-background: #2d3748;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #a0aec0;
+}
+
+/* Make sure combo box selected text is white */
+.combo-box .text-field {
+    -fx-text-fill: white;
 }
