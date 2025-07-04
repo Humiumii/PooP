@@ -1,5 +1,5 @@
 # Cambia esta ruta a donde está javafx-sdk
-PATH_TO_FX="C:/Program Files/Java/jdk-24/javafx-sdk-24.0.1/lib"
+PATH_TO_FX="C:\Users\DIEXT\Documents\JavaFx\openjfx-24.0.1_windows-x64_bin-sdk\javafx-sdk-24.0.1\lib"
 SRC=.
 BIN=./bin
 
@@ -9,14 +9,14 @@ SOURCES=$(wildcard $(SRC)/*.java)
 # export PATH="/c/Program Files/OpenJDK/jdk-22.0.2/bin:$$PATH"
 
 compile:
-	mkdir -p $(BIN)
-	javac --module-path $(PATH_TO_FX) --add-modules javafx.controls -d $(BIN) $(SOURCES)
-	cp modern.css $(BIN)/modern.css
+	if not exist $(BIN) mkdir $(BIN)
+	javac --module-path $(PATH_TO_FX) --add-modules javafx.controls,javafx.fxml -d $(BIN) $(SOURCES)
+	if exist modern.css copy modern.css $(BIN)\modern.css
 
 run:
-	java --module-path $(PATH_TO_FX) --add-modules javafx.controls -cp $(BIN) Main
+	java --module-path $(PATH_TO_FX) --add-modules javafx.controls,javafx.fxml -cp $(BIN) Main
 
 clean:
-	rm -rf $(BIN)
+	if exist $(BIN) rmdir /s /q $(BIN)
 
 all: compile run

@@ -1,321 +1,476 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import java.util.*;
+import java.io.File;
 
 public class SubscriberWindow extends Application implements Subscriber {
-    private List<Movie> movies = new ArrayList<>();
-    private static Map<Movie, List<String>> reviews = new HashMap<>();
-    private User user = new User("Usuario");
-
-   
-    private BorderPane root;
-    private GridPane grid;
-    private Movie selectedMovie = null;
-
+    private String name = "Usuario Local";
+    private Map<Movie, List<String>> reviews = new HashMap<>();
+    private List<Movie> allMovies = new ArrayList<>();
+    private VBox moviesContainer;
+    private VBox subscriptionsContainer;
+    private Label userStatusLabel;
+    private UserManager userManager;
+    private Stage primaryStage;
+    private VBox mainRoot;
+    
+    public SubscriberWindow() {
+        userManager = UserManager.getInstance();
+    }
+    
     @Override
     public void start(Stage primaryStage) {
-        root = new BorderPane();
-        root.getStyleClass().add("subscriber-root");
-        showMovieGrid();
-
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Subscriber - Películas Disponibles");
         
-        Scene scene = new Scene(root, 1200, 700);
-        scene.getStylesheets().add(getClass().getResource("modern.css").toExternalForm());
-
-        primaryStage.setTitle("Subscriber - Películas");
+        mainRoot = new VBox(10);
+        mainRoot.setPadding(new Insets(10));
+        mainRoot.getStyleClass().add("subscriber-root");
+        
+        // Panel de usuario en la parte superior
+        VBox userPanel = createUserPanel();
+        userPanel.getStyleClass().add("sidebar");
+        
+        TabPane tabPane = new TabPane();
+        
+        // Pestaña de películas
+        Tab moviesTab = new Tab("Películas");
+        moviesTab.setClosable(false);
+        
+        VBox moviesRoot = new VBox(10);
+        moviesRoot.setPadding(new Insets(20));
+        
+        Label moviesTitle = new Label("Películas Disponibles");
+        moviesTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        moviesContainer = new VBox(10);
+        ScrollPane moviesScrollPane = new ScrollPane(moviesContainer);
+        moviesScrollPane.setFitToWidth(true);
+        moviesScrollPane.setPrefHeight(500);
+        
+        moviesRoot.getChildren().addAll(moviesTitle, moviesScrollPane);
+        moviesTab.setContent(moviesRoot);
+        
+        // Pestaña de suscripciones
+        Tab subscriptionsTab = new Tab("Suscripciones");
+        subscriptionsTab.setClosable(false);
+        
+        VBox subscriptionsRoot = new VBox(10);
+        subscriptionsRoot.setPadding(new Insets(20));
+        
+        Label subscriptionsTitle = new Label("Gestión de Suscripciones");
+        subscriptionsTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        // Lista de distribuidoras disponibles
+        Label availableLabel = new Label("Distribuidoras Disponibles:");
+        availableLabel.setStyle("-fx-font-weight: bold;");
+        
+        VBox availableDistributors = new VBox(5);
+        for (String distributor : Distributor.getAvailableDistributors()) {
+            HBox distributorBox = new HBox(10);
+            Label distributorLabel = new Label(distributor);
+            Button subscribeButton = new Button("Suscribirse");
+            subscribeButton.setOnAction(e -> {
+                subscribeToDistributor(distributor);
+                updateSubscriptionsView();
+                updateMoviesView();
+            });
+            distributorBox.getChildren().addAll(distributorLabel, subscribeButton);
+            availableDistributors.getChildren().add(distributorBox);
+        }
+        
+        // Lista de suscripciones activas
+        Label subscribedLabel = new Label("Mis Suscripciones:");
+        subscribedLabel.setStyle("-fx-font-weight: bold;");
+        
+        subscriptionsContainer = new VBox(5);
+        
+        subscriptionsRoot.getChildren().addAll(
+            subscriptionsTitle,
+            availableLabel,
+            availableDistributors,
+            new Separator(),
+            subscribedLabel,
+            subscriptionsContainer
+        );
+        
+        subscriptionsTab.setContent(new ScrollPane(subscriptionsRoot));
+        
+        tabPane.getTabs().addAll(moviesTab, subscriptionsTab);
+        
+        mainRoot.getChildren().addAll(userPanel, tabPane);
+        
+        Scene scene = new Scene(mainRoot, 850, 650);
+        scene.getStylesheets().add("modern.css");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        updateSubscriptionsView();
+        updateMoviesView();
     }
-
-    // Muestra el grid de películas en la ventana principal
-    private void showMovieGrid() {
-        grid = new GridPane();
-        grid.setPadding(new Insets(20));
-        grid.setHgap(40);
-        grid.setVgap(15);
-
-        for (int i = 0; i < movies.size(); i++) {
-            Movie movie = movies.get(i);
-
-            // Calcular promedio de notas para la película
-            List<String> allReviews = reviews.getOrDefault(movie, new ArrayList<>());
-            double avg = 0;
-            int count = 0;
-            for (String review : allReviews) {
-                // Buscar el patrón " (X/10):"
-                int idx1 = review.indexOf('(');
-                int idx2 = review.indexOf("/10):");
-                if (idx1 != -1 && idx2 != -1 && idx2 > idx1 + 1) {
-                    try {
-                        int rating = Integer.parseInt(review.substring(idx1 + 1, idx2));
-                        avg += rating;
-                        count++;
-                    } catch (NumberFormatException ignored) {}
-                }
-            }
-            String avgText = count > 0 ? String.format(" [%.1f/10]", avg / count) : " [N/A]";
-
-            // --- Nuevo: VBox con imagen y botón ---
-            VBox movieBox = new VBox(8);
-            movieBox.setAlignment(Pos.CENTER);
-            movieBox.setPrefWidth(220);
-
-            // Imagen del póster (miniatura)
-            ImageView posterView = null;
-            if (movie.getImageUrl() != null && !movie.getImageUrl().isEmpty()) {
-                try {
-                    Image posterImg = new Image(movie.getImageUrl(), 90, 130, true, true);
-                    posterView = new ImageView(posterImg);
-                    posterView.setFitWidth(90);
-                    posterView.setFitHeight(130);
-                    posterView.setPreserveRatio(true);
-                } catch (Exception ignored) {}
-            }
-            if (posterView != null) {
-                movieBox.getChildren().add(posterView);
-            }
-
-            Button btn = new Button(movie.getTitle() + avgText);
-            btn.getStyleClass().add("movie-list-btn");
-            btn.setMinWidth(180);
-            btn.setMinHeight(40);
-            btn.setOnAction(e -> showMovieDetail(movie));
-            movieBox.getChildren().add(btn);
-
-            int col = i % 1;
-            int row = i;
-            grid.add(movieBox, col, row);
-        }
-
-        ScrollPane scrollPane = new ScrollPane(grid);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(650);
-        scrollPane.setPrefWidth(320); // Más ancho
-        scrollPane.getStyleClass().add("movie-list-scroll");
-
-        VBox leftBox = new VBox();
-        Label header = new Label("🎬 Películas");
-        header.getStyleClass().add("sidebar-title");
-        leftBox.getChildren().addAll(header, scrollPane);
-        leftBox.setSpacing(10);
-        leftBox.setPadding(new Insets(20, 10, 20, 20));
-        leftBox.getStyleClass().add("sidebar");
-        leftBox.setPrefWidth(340); // Más ancho
-
-        root.setLeft(leftBox);
-        root.setCenter(null);
-    }
-
-    // Muestra la vista de detalles de la película seleccionada y sus comentarios (solo del usuario local)
-    private void showMovieDetail(Movie movie) {
-        selectedMovie = movie;
-
-        VBox detailBox = new VBox(20);
-        detailBox.setPadding(new Insets(30));
-        detailBox.setPrefWidth(600);
-        detailBox.getStyleClass().add("movie-detail-card");
-
-        // Calcular promedio inicial
-        List<String> allReviews = reviews.getOrDefault(movie, new ArrayList<>());
-        double avg = 0;
-        int count = 0;
-        for (String review : allReviews) {
-            int idx1 = review.indexOf('(');
-            int idx2 = review.indexOf("/10):");
-            if (idx1 != -1 && idx2 != -1 && idx2 > idx1 + 1) {
-                try {
-                    int rating = Integer.parseInt(review.substring(idx1 + 1, idx2));
-                    avg += rating;
-                    count++;
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        String avgText = count > 0 ? String.format(" [%.1f/10]", avg / count) : " [N/A]";
-
-        // Movie title and rating
-        HBox titleBox = new HBox(10);
-        Label title = new Label("🎬 " + movie.getTitle());
-        title.getStyleClass().add("movie-title");
-        Label ratingLabel = new Label(avgText.replace("[", "").replace("]", ""));
-        ratingLabel.getStyleClass().add("movie-rating");
-        titleBox.getChildren().addAll(title, ratingLabel);
-        titleBox.setAlignment(Pos.CENTER_LEFT);
-
-        // Recuadro azul: año y género
-        HBox metaBox = new HBox(15);
-        metaBox.getStyleClass().add("blue-box");
-        metaBox.setPadding(new Insets(10));
-        metaBox.setAlignment(Pos.CENTER_LEFT);
-
-        Label yearLabel = new Label("Año: " + (movie.getYear() != null ? movie.getYear() : "N/A"));
-        yearLabel.getStyleClass().add("meta-label");
-        Label genreLabel = new Label("Género: " + (movie.getGenre() != null ? movie.getGenre() : "N/A"));
-        genreLabel.getStyleClass().add("meta-label");
-        metaBox.getChildren().addAll(yearLabel, genreLabel);
-
-        // Imagen del póster (debajo del metaBox)
-        ImageView posterView = null;
-        if (movie.getImageUrl() != null && !movie.getImageUrl().isEmpty()) {
-            try {
-                Image posterImg = new Image(movie.getImageUrl(), 180, 260, true, true);
-                posterView = new ImageView(posterImg);
-                posterView.setFitWidth(180);
-                posterView.setFitHeight(260);
-                posterView.setPreserveRatio(true);
-            } catch (Exception ignored) {}
-        }
-
-        // Recuadro verde: descripción
-        VBox descBox = new VBox();
-        descBox.getStyleClass().add("green-box");
-        descBox.setPadding(new Insets(15));
-        Label descLabel = new Label(movie.getDescription() != null ? movie.getDescription() : "Sin descripción.");
-        descLabel.getStyleClass().add("desc-label");
-        descBox.getChildren().add(descLabel);
-
-        // Review stats
-        HBox statsBox = new HBox(30);
-        statsBox.setAlignment(Pos.CENTER_LEFT);
-        Label countLabel = new Label(allReviews.size() + " Reseñas");
-        countLabel.getStyleClass().add("stat-label");
-        Label avgLabel = new Label("Promedio: " + (count > 0 ? String.format("%.1f", avg / count) : "N/A"));
-        avgLabel.getStyleClass().add("stat-label");
-        statsBox.getChildren().addAll(countLabel, avgLabel);
-
-        // Reviews List
-        ListView<String> commentList = new ListView<>();
-        commentList.getItems().addAll(allReviews);
-        commentList.setPrefHeight(220);
-        commentList.getStyleClass().add("review-list");
-
-        // Review input
-        VBox reviewForm = new VBox(10);
-        reviewForm.getStyleClass().add("review-form");
-        HBox commentInput = new HBox(10);
-
-        TextField userField = new TextField();
-        userField.setPromptText("Tu nombre");
-        userField.getStyleClass().add("input-field");
-        userField.setPrefWidth(180);
-
-        Spinner<Integer> ratingSpinner = new Spinner<>(1, 10, 5);
-        ratingSpinner.setEditable(true);
-        ratingSpinner.setPrefWidth(80);
-        ratingSpinner.getStyleClass().add("rating-spinner");
-
-        TextField commentField = new TextField();
-        commentField.setPromptText("Escribe tu comentario...");
-        commentField.getStyleClass().add("input-field");
-        commentField.setPrefWidth(220);
-
-        Button addBtn = new Button("✨ Agregar Reseña");
-        addBtn.getStyleClass().add("add-review-btn");
-
-        Runnable submitComment = () -> {
-            String username = userField.getText().trim();
-            String text = commentField.getText().trim();
-            String ratingText = ratingSpinner.getEditor().getText().trim();
-            boolean valid = true;
-
-            // Validación de campos
-            if (username.isEmpty()) {
-                userField.setStyle("-fx-border-color: red;");
-                valid = false;
-            } else {
-                userField.setStyle("");
-            }
-            int rating = -1;
-            try {
-                rating = Integer.parseInt(ratingText);
-                if (rating < 1 || rating > 10) {
-                    ratingSpinner.getEditor().setStyle("-fx-border-color: red;");
-                    valid = false;
-                } else {
-                    ratingSpinner.getEditor().setStyle("");
-                }
-            } catch (NumberFormatException e) {
-                ratingSpinner.getEditor().setStyle("-fx-border-color: red;");
-                valid = false;
-            }
-
-            if (valid) {
-                String userComment = username + " (" + rating + "/10): " + text;
-                user.addReview(movie, userComment);
-                reviews.computeIfAbsent(movie, k -> new ArrayList<>()).add(userComment);
-                commentList.getItems().add(userComment);
-                commentField.clear();
-                userField.clear();
-                ratingSpinner.getValueFactory().setValue(5);
-                userField.setStyle("");
-                ratingSpinner.getEditor().setStyle("");
-
-                // Actualizar el promedio en el título
-                List<String> updatedReviews = reviews.getOrDefault(movie, new ArrayList<>());
-                double newAvg = 0;
-                int newCount = 0;
-                for (String review : updatedReviews) {
-                    int idx1 = review.indexOf('(');
-                    int idx2 = review.indexOf("/10):");
-                    if (idx1 != -1 && idx2 != -1 && idx2 > idx1 + 1) {
-                        try {
-                            int r = Integer.parseInt(review.substring(idx1 + 1, idx2));
-                            newAvg += r;
-                            newCount++;
-                        } catch (NumberFormatException ignored) {}
+    
+    private VBox createUserPanel() {
+        VBox userPanel = new VBox(10);
+        
+        Label userTitle = new Label("Gestión de Usuario");
+        userTitle.getStyleClass().add("sidebar-title");
+        
+        userStatusLabel = new Label();
+        updateUserStatusLabel();
+        
+        HBox userControls = new HBox(10);
+        
+        if (!userManager.isLoggedIn()) {
+            // Mostrar login
+            TextField usernameField = new TextField();
+            usernameField.setPromptText("Nombre de usuario");
+            usernameField.getStyleClass().add("input-field");
+            
+            Button loginButton = new Button("Iniciar Sesión");
+            loginButton.getStyleClass().add("btn-primary");
+            loginButton.setOnAction(e -> {
+                String username = usernameField.getText().trim();
+                if (!username.isEmpty()) {
+                    if (userManager.login(username)) {
+                        refreshWindow();
                     }
+                } else {
+                    showAlert("Error", "Por favor ingrese un nombre de usuario válido.");
                 }
-                String newAvgText = newCount > 0 ? String.format(" [%.1f/10]", newAvg / newCount) : " [N/A]";
-                title.setText(movie.getTitle() + newAvgText);
-
-                showMovieGrid();
-                showMovieDetail(movie);
-            }
-        };
-
-        addBtn.setOnAction(e -> submitComment.run());
-        userField.setOnAction(e -> submitComment.run());
-        commentField.setOnAction(e -> submitComment.run());
-        ratingSpinner.getEditor().setOnAction(e -> submitComment.run());
-
-        commentInput.getChildren().addAll(userField, ratingSpinner, commentField, addBtn);
-        reviewForm.getChildren().addAll(new Label("💬 Agregar tu Reseña"), commentInput);
-
-        detailBox.getChildren().clear();
-        detailBox.getChildren().add(titleBox);
-        detailBox.getChildren().add(metaBox); // recuadro azul
-        if (posterView != null) {
-            detailBox.getChildren().add(posterView);
+            });
+            
+            // ComboBox para usuarios registrados
+            ComboBox<String> usersCombo = new ComboBox<>();
+            usersCombo.getItems().addAll(userManager.getRegisteredUsers());
+            usersCombo.setPromptText("Usuarios registrados");
+            usersCombo.getStyleClass().add("input-field");
+            usersCombo.setOnAction(e -> {
+                String selectedUser = usersCombo.getValue();
+                if (selectedUser != null) {
+                    usernameField.setText(selectedUser);
+                }
+            });
+            
+            userControls.getChildren().addAll(
+                new Label("Usuario:"), usernameField,
+                new Label("O seleccionar:"), usersCombo,
+                loginButton
+            );
+        } else {
+            // Mostrar logout
+            Button logoutButton = new Button("Cerrar Sesión");
+            logoutButton.getStyleClass().add("add-review-btn");
+            logoutButton.setOnAction(e -> {
+                userManager.logout();
+                refreshWindow();
+            });
+            
+            Button switchUserButton = new Button("Cambiar Usuario");
+            switchUserButton.getStyleClass().add("btn-primary");
+            switchUserButton.setOnAction(e -> {
+                userManager.logout();
+                refreshWindow();
+            });
+            
+            userControls.getChildren().addAll(logoutButton, switchUserButton);
         }
-        detailBox.getChildren().add(descBox); // recuadro verde
-        detailBox.getChildren().addAll(statsBox, commentList, reviewForm);
-
-        root.setCenter(detailBox);
+        
+        userPanel.getChildren().addAll(userTitle, userStatusLabel, userControls);
+        return userPanel;
     }
-
-    // Método del modelo Publish-Subscribe
+    
+    private void refreshWindow() {
+        try {
+            start(primaryStage);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private void updateUserStatusLabel() {
+        if (userManager.isLoggedIn()) {
+            userStatusLabel.setText("Sesión iniciada como: " + userManager.getCurrentUser());
+            userStatusLabel.setStyle("-fx-text-fill: #2e7d32; -fx-font-weight: bold;");
+        } else {
+            userStatusLabel.setText("No hay sesión iniciada");
+            userStatusLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        }
+    }
+    
     @Override
     public void notify(Movie movie) {
-        movies.add(movie);
-        reviews.putIfAbsent(movie, new ArrayList<>());
-        if (grid != null) {
-            showMovieGrid();
-        }
+        // Ya no necesitamos agregar la película aquí porque se almacena globalmente
+        // Solo actualizamos la vista
+        updateMoviesView();
+        System.out.println(name + " ha sido notificado de una nueva película: " + movie.getTitle());
+    }
+    
+    @Override
+    public void addReview(Movie movie, String review) {
+        reviews.computeIfAbsent(movie, k -> new ArrayList<>()).add(review);
+        System.out.println(name + " ha dejado una reseña para " + movie.getTitle() + ": " + review);
     }
 
     @Override
-    public void addReview(Movie movie, String review) {
-        user.addReview(movie, review);
-        reviews.computeIfAbsent(movie, k -> new ArrayList<>()).add(review);
+    public void addReview(Movie movie, String comment, int rating) {
+        String username = userManager.isLoggedIn() ? 
+                         userManager.getCurrentUser() : 
+                         "Usuario Anónimo";
+        movie.addReview(comment, rating, username);
+        System.out.println(username + " ha dejado una reseña para " + movie.getTitle() + " con calificación " + rating + "/10: " + comment);
     }
-
-    public List<Movie> getMovies() {
-        return movies;
+    
+    @Override
+    public void subscribeToDistributor(String distributor) {
+        userManager.subscribeCurrentUserToDistributor(distributor);
+        System.out.println((userManager.getCurrentUser() != null ? userManager.getCurrentUser() : "Usuario") + " se ha suscrito a: " + distributor);
+    }
+    
+    @Override
+    public void unsubscribeFromDistributor(String distributor) {
+        userManager.unsubscribeCurrentUserFromDistributor(distributor);
+        System.out.println((userManager.getCurrentUser() != null ? userManager.getCurrentUser() : "Usuario") + " se ha desuscrito de: " + distributor);
+    }
+    
+    @Override
+    public Set<String> getSubscribedDistributors() {
+        return userManager.getCurrentUserSubscriptions();
+    }
+    
+    @Override
+    public boolean canViewMovie(Movie movie) {
+        return movie.getDistributor() == null || userManager.isCurrentUserSubscribedTo(movie.getDistributor());
+    }
+    
+    private void updateMoviesView() {
+        moviesContainer.getChildren().clear();
+        
+        Set<String> currentUserSubscriptions = userManager.getCurrentUserSubscriptions();
+        
+        if (currentUserSubscriptions.isEmpty()) {
+            Label noSubscriptionsLabel = new Label("No tienes suscripciones activas. Ve a la pestaña 'Suscripciones' para suscribirte a distribuidoras.");
+            noSubscriptionsLabel.setStyle("-fx-text-fill: #666;");
+            moviesContainer.getChildren().add(noSubscriptionsLabel);
+            return;
+        }
+        
+        // Obtener todas las películas del almacén global
+        List<Movie> allStoredMovies = MovieStorage.getInstance().getAllMovies();
+        List<Movie> availableMovies = new ArrayList<>();
+        
+        for (Movie movie : allStoredMovies) {
+            if (canViewMovie(movie)) {
+                availableMovies.add(movie);
+            }
+        }
+        
+        if (availableMovies.isEmpty()) {
+            Label noMoviesLabel = new Label("No hay películas disponibles para tus suscripciones actuales.");
+            noMoviesLabel.setStyle("-fx-text-fill: #666;");
+            moviesContainer.getChildren().add(noMoviesLabel);
+        } else {
+            for (Movie movie : availableMovies) {
+                VBox movieCard = createMovieCard(movie);
+                moviesContainer.getChildren().add(movieCard);
+            }
+        }
+    }
+    
+    private void updateSubscriptionsView() {
+        subscriptionsContainer.getChildren().clear();
+        
+        Set<String> currentUserSubscriptions = userManager.getCurrentUserSubscriptions();
+        
+        if (currentUserSubscriptions.isEmpty()) {
+            Label noSubscriptionsLabel = new Label("No tienes suscripciones activas.");
+            noSubscriptionsLabel.setStyle("-fx-text-fill: #666;");
+            subscriptionsContainer.getChildren().add(noSubscriptionsLabel);
+        } else {
+            for (String distributor : currentUserSubscriptions) {
+                HBox subscriptionBox = new HBox(10);
+                Label distributorLabel = new Label(distributor);
+                Button unsubscribeButton = new Button("Desuscribirse");
+                unsubscribeButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+                unsubscribeButton.setOnAction(e -> {
+                    unsubscribeFromDistributor(distributor);
+                    updateSubscriptionsView();
+                    updateMoviesView();
+                });
+                subscriptionBox.getChildren().addAll(distributorLabel, unsubscribeButton);
+                subscriptionsContainer.getChildren().add(subscriptionBox);
+            }
+        }
+    }
+    
+    private VBox createMovieCard(Movie movie) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("movie-detail-card");
+        
+        // Título y imagen
+        HBox titleImageBox = new HBox(10);
+        
+        VBox titleInfoBox = new VBox(5);
+        Label titleLabel = new Label(movie.getTitle());
+        titleLabel.getStyleClass().add("movie-title");
+        
+        // Calificación promedio
+        double avgRating = movie.getAverageRating();
+        String ratingText = avgRating > 0 ? String.format("%.1f/10", avgRating) : "Sin calificación";
+        Label ratingLabel = new Label("⭐ " + ratingText + " (" + movie.getReviewCount() + " reseñas)");
+        ratingLabel.getStyleClass().add("movie-rating");
+        
+        // Información de la película en caja azul
+        VBox movieInfoBox = new VBox(5);
+        movieInfoBox.getStyleClass().add("blue-box");
+        
+        Label distributorLabel = new Label("Distribuidora: " + movie.getDistributor());
+        distributorLabel.getStyleClass().add("meta-label");
+        
+        Label genreLabel = new Label("Género: " + movie.getGenre());
+        genreLabel.getStyleClass().add("meta-label");
+        
+        Label yearLabel = new Label("Año: " + movie.getYear());
+        yearLabel.getStyleClass().add("meta-label");
+        
+        movieInfoBox.getChildren().addAll(distributorLabel, genreLabel, yearLabel);
+        
+        titleInfoBox.getChildren().addAll(titleLabel, ratingLabel, movieInfoBox);
+        
+        // Imagen de la película
+        ImageView imageView = new ImageView();
+        try {
+            String imagePath = movie.getImageUrl();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                Image image;
+                if (imagePath.startsWith("http")) {
+                    image = new Image(imagePath, 150, 200, true, true);
+                } else {
+                    File imageFile = new File(imagePath);
+                    if (imageFile.exists()) {
+                        image = new Image(imageFile.toURI().toString(), 150, 200, true, true);
+                    } else {
+                        image = createDefaultImage();
+                    }
+                }
+                imageView.setImage(image);
+            } else {
+                imageView.setImage(createDefaultImage());
+            }
+        } catch (Exception e) {
+            imageView.setImage(createDefaultImage());
+        }
+        
+        titleImageBox.getChildren().addAll(imageView, titleInfoBox);
+        
+        // Descripción en caja verde
+        VBox descriptionBox = new VBox(5);
+        descriptionBox.getStyleClass().add("green-box");
+        
+        Label descriptionLabel = new Label(movie.getDescription());
+        descriptionLabel.getStyleClass().add("desc-label");
+        descriptionLabel.setWrapText(true);
+        
+        descriptionBox.getChildren().add(descriptionLabel);
+        
+        // Mostrar reseñas existentes
+        VBox reviewsBox = new VBox(5);
+        reviewsBox.getStyleClass().add("review-list");
+        
+        Label reviewsTitle = new Label("Reseñas:");
+        reviewsTitle.getStyleClass().add("stat-label");
+        reviewsBox.getChildren().add(reviewsTitle);
+        
+        for (Movie.Review review : movie.getReviews()) {
+            VBox reviewBox = new VBox(2);
+            reviewBox.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-color: #e1e8ed; -fx-border-width: 1;");
+            
+            HBox reviewHeader = new HBox(10);
+            Label ratingReviewLabel = new Label("⭐ " + review.getRating() + "/10");
+            ratingReviewLabel.getStyleClass().add("movie-rating");
+            
+            Label usernameLabel = new Label("por " + review.getUsername());
+            usernameLabel.getStyleClass().add("stat-label");
+            
+            reviewHeader.getChildren().addAll(ratingReviewLabel, usernameLabel);
+            
+            Label commentLabel = new Label(review.getComment());
+            commentLabel.setWrapText(true);
+            commentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333;");
+            
+            reviewBox.getChildren().addAll(reviewHeader, commentLabel);
+            reviewsBox.getChildren().add(reviewBox);
+        }
+        
+        // Área para agregar nueva reseña
+        VBox addReviewBox = new VBox(5);
+        addReviewBox.getStyleClass().add("review-form");
+        
+        Label addReviewTitle = new Label("Agregar reseña:");
+        addReviewTitle.getStyleClass().add("stat-label");
+        
+        if (!userManager.isLoggedIn()) {
+            Label loginRequiredLabel = new Label("Debes iniciar sesión para agregar reseñas.");
+            loginRequiredLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-style: italic;");
+            addReviewBox.getChildren().addAll(addReviewTitle, loginRequiredLabel);
+        } else {
+            HBox ratingBox = new HBox(10);
+            Label ratingPrompt = new Label("Calificación (1-10):");
+            ratingPrompt.getStyleClass().add("stat-label");
+            
+            Spinner<Integer> ratingSpinner = new Spinner<>(1, 10, 5);
+            ratingSpinner.setEditable(true);
+            ratingSpinner.getStyleClass().add("rating-spinner");
+            
+            ratingBox.getChildren().addAll(ratingPrompt, ratingSpinner);
+            
+            TextArea reviewArea = new TextArea();
+            reviewArea.setPromptText("Escribe tu comentario...");
+            reviewArea.setPrefRowCount(2);
+            reviewArea.getStyleClass().add("input-field");
+            
+            Button reviewButton = new Button("Agregar Reseña");
+            reviewButton.getStyleClass().add("add-review-btn");
+            reviewButton.setOnAction(e -> {
+                String comment = reviewArea.getText().trim();
+                int rating = ratingSpinner.getValue();
+                if (!comment.isEmpty()) {
+                    addReview(movie, comment, rating);
+                    reviewArea.clear();
+                    ratingSpinner.getValueFactory().setValue(5);
+                    updateMoviesView();
+                }
+            });
+            
+            addReviewBox.getChildren().addAll(addReviewTitle, ratingBox, reviewArea, reviewButton);
+        }
+        
+        card.getChildren().addAll(
+            titleImageBox,
+            descriptionBox,
+            reviewsBox,
+            new Separator(),
+            addReviewBox
+        );
+        
+        return card;
+    }
+    
+    private Image createDefaultImage() {
+        // Crear una imagen por defecto simple
+        return new Image("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", 150, 200, false, true);
+    }
+    
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

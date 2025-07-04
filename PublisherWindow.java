@@ -1,146 +1,233 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.stage.FileChooser;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
+import javafx.stage.Stage;
 import java.io.File;
 import java.util.List;
 
 public class PublisherWindow extends Application {
-    private MoviePublisher publisher = new MoviePublisher();
     private List<Subscriber> subscribers;
-
-    public PublisherWindow() {
-        // Constructor vacío para JavaFX
-    }
-
+    private MoviePublisher publisher;
+    
     public PublisherWindow(List<Subscriber> subscribers) {
         this.subscribers = subscribers;
-        for (Subscriber s : subscribers) {
-            publisher.subscribe(s);
+        this.publisher = new MoviePublisher();
+        
+        // Suscribir a todos los subscribers
+        for (Subscriber subscriber : subscribers) {
+            publisher.subscribe(subscriber);
         }
     }
 
     @Override
     public void start(Stage primaryStage) {
-        VBox root = new VBox();
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(40, 0, 0, 0));
-        root.getStyleClass().add("publisher-root");
-
-        VBox card = new VBox(20);
-        card.setPadding(new Insets(30));
-        card.setMaxWidth(420);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, #00000022, 10, 0.2, 0, 4);");
-        card.setAlignment(Pos.TOP_CENTER);
-
-        // Header
-        VBox header = new VBox(2);
-        Label titleLabel = new Label("Publisher");
-        titleLabel.getStyleClass().add("publisher-title");
-        Label subtitle = new Label("Publica nuevas películas");
-        subtitle.getStyleClass().add("publisher-subtitle");
-        header.getChildren().addAll(titleLabel, subtitle);
-        header.setAlignment(Pos.CENTER);
-
-        // Form fields
+        primaryStage.setTitle("Publisher - Subir Películas");
+        
+        // Crear el contenedor principal con ScrollPane para manejar contenido largo
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(20));
+        root.getStyleClass().add("sidebar");
+        
+        // Configurar para que se expanda con la ventana
+        VBox.setVgrow(root, Priority.ALWAYS);
+        
+        // Título
+        Label titleLabel = new Label("Subir Nueva Película");
+        titleLabel.getStyleClass().add("sidebar-title");
+        
+        // Crear un GridPane para organizar los campos de forma más limpia
+        GridPane formGrid = new GridPane();
+        formGrid.setHgap(10);
+        formGrid.setVgap(15);
+        formGrid.setPadding(new Insets(10));
+        
+        // Configurar columnas para que se expandan
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setMinWidth(120);
+        col1.setPrefWidth(120);
+        
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setHgrow(Priority.ALWAYS);
+        col2.setMinWidth(200);
+        
+        formGrid.getColumnConstraints().addAll(col1, col2);
+        
+        int row = 0;
+        
+        // Campo título
+        Label titleFieldLabel = new Label("Título:");
+        titleFieldLabel.getStyleClass().add("stat-label");
         TextField titleField = new TextField();
         titleField.setPromptText("Título de la película");
         titleField.getStyleClass().add("input-field");
-
-        ComboBox<String> genreBox = new ComboBox<>();
-        genreBox.getItems().addAll("Acción", "Comedia", "Drama", "Ciencia Ficción", "Animación");
-        genreBox.setPromptText("Género");
-        genreBox.getStyleClass().add("input-field");
-
-        TextField yearField = new TextField();
-        yearField.setPromptText("Año de lanzamiento");
-        yearField.getStyleClass().add("input-field");
-
-        TextArea descField = new TextArea();
-        descField.setPromptText("Descripción");
-        descField.setPrefRowCount(3);
-        descField.getStyleClass().add("input-field");
-
-        // Imagen
-        Label imageLabel = new Label("Poster de la película");
-        imageLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        Button uploadBtn = new Button("Subir imagen");
-        uploadBtn.getStyleClass().add("btn-primary");
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(120);
-        imageView.setFitHeight(180);
-        imageView.setPreserveRatio(true);
-        imageView.setVisible(false);
-        final File[] selectedImage = {null};
-
-        uploadBtn.setOnAction(e -> {
+        titleField.setMaxWidth(Double.MAX_VALUE);
+        formGrid.add(titleFieldLabel, 0, row);
+        formGrid.add(titleField, 1, row++);
+        
+        // Campo imagen con botón
+        Label imageFieldLabel = new Label("Imagen:");
+        imageFieldLabel.getStyleClass().add("stat-label");
+        HBox imageBox = new HBox(10);
+        TextField imageUrlField = new TextField();
+        imageUrlField.setPromptText("URL de la imagen o ruta local");
+        imageUrlField.getStyleClass().add("input-field");
+        HBox.setHgrow(imageUrlField, Priority.ALWAYS);
+        
+        Button browseButton = new Button("Buscar");
+        browseButton.getStyleClass().add("btn-primary");
+        browseButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Selecciona una imagen");
+            fileChooser.setTitle("Seleccionar Imagen");
             fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg", "*.gif")
             );
-            File file = fileChooser.showOpenDialog(primaryStage);
-            if (file != null) {
-                Image img = new Image(file.toURI().toString());
-                imageView.setImage(img);
-                imageView.setVisible(true);
-                selectedImage[0] = file;
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if (selectedFile != null) {
+                imageUrlField.setText(selectedFile.getAbsolutePath());
             }
         });
-
-        VBox imageBox = new VBox(8, imageLabel, uploadBtn, imageView);
-        imageBox.setAlignment(Pos.CENTER);
-
-        Button publishButton = new Button("🚀 Publicar Película");
-        publishButton.getStyleClass().add("btn-primary");
+        
+        imageBox.getChildren().addAll(imageUrlField, browseButton);
+        formGrid.add(imageFieldLabel, 0, row);
+        formGrid.add(imageBox, 1, row++);
+        
+        // Campo género
+        Label genreFieldLabel = new Label("Género:");
+        genreFieldLabel.getStyleClass().add("stat-label");
+        ComboBox<String> genreCombo = new ComboBox<>();
+        genreCombo.getItems().addAll("Acción", "Aventura", "Comedia", "Drama", "Terror", "Ciencia Ficción", "Romance", "Thriller");
+        genreCombo.setPromptText("Seleccionar género");
+        genreCombo.getStyleClass().add("input-field");
+        genreCombo.setMaxWidth(Double.MAX_VALUE);
+        formGrid.add(genreFieldLabel, 0, row);
+        formGrid.add(genreCombo, 1, row++);
+        
+        // Campo año
+        Label yearFieldLabel = new Label("Año:");
+        yearFieldLabel.getStyleClass().add("stat-label");
+        TextField yearField = new TextField();
+        yearField.setPromptText("Año de estreno");
+        yearField.getStyleClass().add("input-field");
+        yearField.setMaxWidth(Double.MAX_VALUE);
+        formGrid.add(yearFieldLabel, 0, row);
+        formGrid.add(yearField, 1, row++);
+        
+        // Campo descripción
+        Label descFieldLabel = new Label("Descripción:");
+        descFieldLabel.getStyleClass().add("stat-label");
+        TextArea descriptionArea = new TextArea();
+        descriptionArea.setPromptText("Descripción de la película");
+        descriptionArea.setPrefRowCount(4);
+        descriptionArea.setMaxHeight(100);
+        descriptionArea.getStyleClass().add("input-field");
+        formGrid.add(descFieldLabel, 0, row);
+        formGrid.add(descriptionArea, 1, row++);
+        
+        // Campo distribuidora
+        Label distFieldLabel = new Label("Distribuidora:");
+        distFieldLabel.getStyleClass().add("stat-label");
+        ComboBox<String> distributorCombo = new ComboBox<>();
+        distributorCombo.getItems().addAll(Distributor.getAvailableDistributors());
+        distributorCombo.setPromptText("Seleccionar distribuidora");
+        distributorCombo.getStyleClass().add("input-field");
+        distributorCombo.setMaxWidth(Double.MAX_VALUE);
+        formGrid.add(distFieldLabel, 0, row);
+        formGrid.add(distributorCombo, 1, row++);
+        
+        // Sección para nueva distribuidora
+        VBox newDistributorSection = new VBox(10);
+        newDistributorSection.getStyleClass().add("review-form");
+        
+        Label newDistLabel = new Label("Agregar nueva distribuidora:");
+        newDistLabel.getStyleClass().add("stat-label");
+        
+        HBox newDistBox = new HBox(10);
+        TextField newDistributorField = new TextField();
+        newDistributorField.setPromptText("Nueva distribuidora");
+        newDistributorField.getStyleClass().add("input-field");
+        HBox.setHgrow(newDistributorField, Priority.ALWAYS);
+        
+        Button addDistributorButton = new Button("Agregar");
+        addDistributorButton.getStyleClass().add("btn-primary");
+        addDistributorButton.setOnAction(e -> {
+            String newDistributor = newDistributorField.getText().trim();
+            if (!newDistributor.isEmpty()) {
+                Distributor.addDistributor(newDistributor);
+                distributorCombo.getItems().clear();
+                distributorCombo.getItems().addAll(Distributor.getAvailableDistributors());
+                distributorCombo.setValue(newDistributor);
+                newDistributorField.clear();
+                showAlert("Éxito", "Distribuidora agregada exitosamente!");
+            }
+        });
+        
+        newDistBox.getChildren().addAll(newDistributorField, addDistributorButton);
+        newDistributorSection.getChildren().addAll(newDistLabel, newDistBox);
+        
+        // Botón de publicar
+        Button publishButton = new Button("Publicar Película");
+        publishButton.getStyleClass().add("add-review-btn");
         publishButton.setMaxWidth(Double.MAX_VALUE);
-
+        publishButton.setPrefHeight(50);
         publishButton.setOnAction(e -> {
             String title = titleField.getText().trim();
-            String genre = genreBox.getValue() != null ? genreBox.getValue() : "";
+            String imageUrl = imageUrlField.getText().trim();
+            String genre = genreCombo.getValue();
             String year = yearField.getText().trim();
-            String desc = descField.getText().trim();
-            String poster = selectedImage[0] != null ? selectedImage[0].toURI().toString() : "";
-
-            if (!title.isEmpty()) {
-                Movie movie = new Movie(title, poster, genre, year, desc);
-                publisher.publish(movie);
-                titleField.clear();
-                genreBox.setValue(null);
-                yearField.clear();
-                descField.clear();
-                imageView.setImage(null);
-                imageView.setVisible(false);
-                selectedImage[0] = null;
+            String description = descriptionArea.getText().trim();
+            String distributor = distributorCombo.getValue();
+            
+            if (title.isEmpty() || imageUrl.isEmpty() || genre == null || year.isEmpty() || distributor == null) {
+                showAlert("Error", "Por favor, complete todos los campos incluyendo la distribuidora.");
+                return;
             }
+            
+            Movie movie = new Movie(title, imageUrl, genre, year, description, distributor);
+            publisher.publish(movie);
+            
+            showAlert("Éxito", "Película publicada exitosamente!");
+            
+            // Limpiar campos
+            titleField.clear();
+            imageUrlField.clear();
+            genreCombo.setValue(null);
+            yearField.clear();
+            descriptionArea.clear();
+            distributorCombo.setValue(null);
         });
-
-        card.getChildren().addAll(header, titleField, genreBox, yearField, descField, imageBox, publishButton);
-        root.getChildren().add(card);
-
-        Scene scene = new Scene(root, 600, 500);
-        scene.getStylesheets().add(getClass().getResource("modern.css").toExternalForm());
-        primaryStage.setTitle("Publisher - Publicar Película");
+        
+        // Agregar todo al contenedor principal
+        root.getChildren().addAll(
+            titleLabel,
+            formGrid,
+            newDistributorSection,
+            publishButton
+        );
+        
+        // Crear ScrollPane para manejar ventanas pequeñas
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.getStyleClass().add("subscriber-root");
+        
+        // Configurar la escena con tamaño mínimo y máximo
+        Scene scene = new Scene(scrollPane, 600, 700);
+        scene.getStylesheets().add("modern.css");
+        
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(800);
         primaryStage.show();
     }
-
-    public void publishMovie(String title) {
-        if (!title.isEmpty()) {
-            Movie movie = new Movie(title, "");
-            publisher.publish(movie);
-        }
-    }
-
-    public static void main(String[] args) {
-        // Para pruebas manuales, solo Publisher
-        launch(args);
+    
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
