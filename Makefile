@@ -1,5 +1,5 @@
-# Cambia esta ruta a donde realmente está tu javafx-sdk
-PATH_TO_FX=C:/Users/rahar/Downloads/openjfx-24.0.1_windows-x64_bin-sdk/javafx-sdk-24.0.1/lib
+# Cambia esta ruta a donde está javafx-sdk
+PATH_TO_FX="C:/Program Files/Java/jdk-24/javafx-sdk-24.0.1/lib"
 SRC=.
 BIN=./bin
 
@@ -11,6 +11,7 @@ SOURCES=$(wildcard $(SRC)/*.java)
 compile:
 	mkdir -p $(BIN)
 	javac --module-path $(PATH_TO_FX) --add-modules javafx.controls -d $(BIN) $(SOURCES)
+	cp modern.css $(BIN)/modern.css
 
 run:
 	java --module-path $(PATH_TO_FX) --add-modules javafx.controls -cp $(BIN) Main

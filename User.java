@@ -22,5 +22,5 @@ public class User implements Subscriber {
         System.out.println(name + " ha dejado una reseña para " + movie.getTitle() + ": " + review);
     }
 
-    // ...existing code...
+    
 }

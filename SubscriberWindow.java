@@ -1,9 +1,12 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import java.util.*;
 
 public class SubscriberWindow extends Application implements Subscriber {
@@ -11,7 +14,7 @@ public class SubscriberWindow extends Application implements Subscriber {
     private static Map<Movie, List<String>> reviews = new HashMap<>();
     private User user = new User("Usuario");
 
-    // Referencias para actualizar la vista principal y de detalles
+   
     private BorderPane root;
     private GridPane grid;
     private Movie selectedMovie = null;
@@ -19,10 +22,13 @@ public class SubscriberWindow extends Application implements Subscriber {
     @Override
     public void start(Stage primaryStage) {
         root = new BorderPane();
+        root.getStyleClass().add("subscriber-root");
         showMovieGrid();
 
-        root.setStyle("-fx-border-color: black; -fx-border-width: 3;");
-        Scene scene = new Scene(root, 900, 500);
+        
+        Scene scene = new Scene(root, 1200, 700);
+        scene.getStylesheets().add(getClass().getResource("modern.css").toExternalForm());
+
         primaryStage.setTitle("Subscriber - Películas");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -56,21 +62,54 @@ public class SubscriberWindow extends Application implements Subscriber {
             }
             String avgText = count > 0 ? String.format(" [%.1f/10]", avg / count) : " [N/A]";
 
+            // --- Nuevo: VBox con imagen y botón ---
+            VBox movieBox = new VBox(8);
+            movieBox.setAlignment(Pos.CENTER);
+            movieBox.setPrefWidth(220);
+
+            // Imagen del póster (miniatura)
+            ImageView posterView = null;
+            if (movie.getImageUrl() != null && !movie.getImageUrl().isEmpty()) {
+                try {
+                    Image posterImg = new Image(movie.getImageUrl(), 90, 130, true, true);
+                    posterView = new ImageView(posterImg);
+                    posterView.setFitWidth(90);
+                    posterView.setFitHeight(130);
+                    posterView.setPreserveRatio(true);
+                } catch (Exception ignored) {}
+            }
+            if (posterView != null) {
+                movieBox.getChildren().add(posterView);
+            }
+
             Button btn = new Button(movie.getTitle() + avgText);
-            btn.setMinWidth(200);
-            btn.setMinHeight(50);
-            btn.setStyle("-fx-border-color: black; -fx-font-size: 16;");
+            btn.getStyleClass().add("movie-list-btn");
+            btn.setMinWidth(180);
+            btn.setMinHeight(40);
             btn.setOnAction(e -> showMovieDetail(movie));
-            int col = i % 2;
-            int row = i / 2;
-            grid.add(btn, col, row);
+            movieBox.getChildren().add(btn);
+
+            int col = i % 1;
+            int row = i;
+            grid.add(movieBox, col, row);
         }
 
         ScrollPane scrollPane = new ScrollPane(grid);
         scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(450);
+        scrollPane.setPrefHeight(650);
+        scrollPane.setPrefWidth(320); // Más ancho
+        scrollPane.getStyleClass().add("movie-list-scroll");
 
-        root.setLeft(scrollPane);
+        VBox leftBox = new VBox();
+        Label header = new Label("🎬 Películas");
+        header.getStyleClass().add("sidebar-title");
+        leftBox.getChildren().addAll(header, scrollPane);
+        leftBox.setSpacing(10);
+        leftBox.setPadding(new Insets(20, 10, 20, 20));
+        leftBox.getStyleClass().add("sidebar");
+        leftBox.setPrefWidth(340); // Más ancho
+
+        root.setLeft(leftBox);
         root.setCenter(null);
     }
 
@@ -78,9 +117,10 @@ public class SubscriberWindow extends Application implements Subscriber {
     private void showMovieDetail(Movie movie) {
         selectedMovie = movie;
 
-        VBox detailBox = new VBox(10);
-        detailBox.setPadding(new Insets(30, 30, 30, 30));
-        detailBox.setPrefWidth(400);
+        VBox detailBox = new VBox(20);
+        detailBox.setPadding(new Insets(30));
+        detailBox.setPrefWidth(600);
+        detailBox.getStyleClass().add("movie-detail-card");
 
         // Calcular promedio inicial
         List<String> allReviews = reviews.getOrDefault(movie, new ArrayList<>());
@@ -99,54 +139,84 @@ public class SubscriberWindow extends Application implements Subscriber {
         }
         String avgText = count > 0 ? String.format(" [%.1f/10]", avg / count) : " [N/A]";
 
-        Label title = new Label(movie.getTitle() + avgText);
-        title.setStyle("-fx-font-size: 22; -fx-font-weight: bold;");
+        // Movie title and rating
+        HBox titleBox = new HBox(10);
+        Label title = new Label("🎬 " + movie.getTitle());
+        title.getStyleClass().add("movie-title");
+        Label ratingLabel = new Label(avgText.replace("[", "").replace("]", ""));
+        ratingLabel.getStyleClass().add("movie-rating");
+        titleBox.getChildren().addAll(title, ratingLabel);
+        titleBox.setAlignment(Pos.CENTER_LEFT);
 
+        // Recuadro azul: año y género
+        HBox metaBox = new HBox(15);
+        metaBox.getStyleClass().add("blue-box");
+        metaBox.setPadding(new Insets(10));
+        metaBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label yearLabel = new Label("Año: " + (movie.getYear() != null ? movie.getYear() : "N/A"));
+        yearLabel.getStyleClass().add("meta-label");
+        Label genreLabel = new Label("Género: " + (movie.getGenre() != null ? movie.getGenre() : "N/A"));
+        genreLabel.getStyleClass().add("meta-label");
+        metaBox.getChildren().addAll(yearLabel, genreLabel);
+
+        // Imagen del póster (debajo del metaBox)
+        ImageView posterView = null;
+        if (movie.getImageUrl() != null && !movie.getImageUrl().isEmpty()) {
+            try {
+                Image posterImg = new Image(movie.getImageUrl(), 180, 260, true, true);
+                posterView = new ImageView(posterImg);
+                posterView.setFitWidth(180);
+                posterView.setFitHeight(260);
+                posterView.setPreserveRatio(true);
+            } catch (Exception ignored) {}
+        }
+
+        // Recuadro verde: descripción
+        VBox descBox = new VBox();
+        descBox.getStyleClass().add("green-box");
+        descBox.setPadding(new Insets(15));
+        Label descLabel = new Label(movie.getDescription() != null ? movie.getDescription() : "Sin descripción.");
+        descLabel.getStyleClass().add("desc-label");
+        descBox.getChildren().add(descLabel);
+
+        // Review stats
+        HBox statsBox = new HBox(30);
+        statsBox.setAlignment(Pos.CENTER_LEFT);
+        Label countLabel = new Label(allReviews.size() + " Reseñas");
+        countLabel.getStyleClass().add("stat-label");
+        Label avgLabel = new Label("Promedio: " + (count > 0 ? String.format("%.1f", avg / count) : "N/A"));
+        avgLabel.getStyleClass().add("stat-label");
+        statsBox.getChildren().addAll(countLabel, avgLabel);
+
+        // Reviews List
         ListView<String> commentList = new ListView<>();
         commentList.getItems().addAll(allReviews);
-        commentList.setPrefHeight(300);
+        commentList.setPrefHeight(220);
+        commentList.getStyleClass().add("review-list");
 
+        // Review input
+        VBox reviewForm = new VBox(10);
+        reviewForm.getStyleClass().add("review-form");
         HBox commentInput = new HBox(10);
 
         TextField userField = new TextField();
-        userField.setPromptText("Usuario");
-
-        TextField commentField = new TextField();
-        commentField.setPromptText("Escribe tu comentario...");
+        userField.setPromptText("Tu nombre");
+        userField.getStyleClass().add("input-field");
+        userField.setPrefWidth(180);
 
         Spinner<Integer> ratingSpinner = new Spinner<>(1, 10, 5);
         ratingSpinner.setEditable(true);
-        ratingSpinner.setPrefWidth(60);
+        ratingSpinner.setPrefWidth(80);
+        ratingSpinner.getStyleClass().add("rating-spinner");
 
-        // Restringe la entrada a números entre 1 y 10
-        TextFormatter<Integer> ratingFormatter = new TextFormatter<>(change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("\\d{0,2}")) {
-                try {
-                    if (newText.isEmpty()) return change;
-                    int value = Integer.parseInt(newText);
-                    if (value >= 1 && value <= 10) {
-                        return change;
-                    }
-                } catch (NumberFormatException ignored) {}
-            }
-            return null;
-        });
-        ratingSpinner.getEditor().setTextFormatter(ratingFormatter);
+        TextField commentField = new TextField();
+        commentField.setPromptText("Escribe tu comentario...");
+        commentField.getStyleClass().add("input-field");
+        commentField.setPrefWidth(220);
 
-        // Sincroniza el valor del Spinner con el editor manual
-        ratingSpinner.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            try {
-                if (!newVal.isEmpty()) {
-                    int value = Integer.parseInt(newVal);
-                    if (value >= 1 && value <= 10) {
-                        ratingSpinner.getValueFactory().setValue(value);
-                    }
-                }
-            } catch (NumberFormatException ignored) {}
-        });
-
-        Button addBtn = new Button("Agregar");
+        Button addBtn = new Button("✨ Agregar Reseña");
+        addBtn.getStyleClass().add("add-review-btn");
 
         Runnable submitComment = () -> {
             String username = userField.getText().trim();
@@ -175,14 +245,6 @@ public class SubscriberWindow extends Application implements Subscriber {
                 valid = false;
             }
 
-            // El comentario puede estar vacío, pero si quieres que sea obligatorio, descomenta:
-            // if (text.isEmpty()) {
-            //     commentField.setStyle("-fx-border-color: red;");
-            //     valid = false;
-            // } else {
-            //     commentField.setStyle("");
-            // }
-
             if (valid) {
                 String userComment = username + " (" + rating + "/10): " + text;
                 user.addReview(movie, userComment);
@@ -193,7 +255,6 @@ public class SubscriberWindow extends Application implements Subscriber {
                 ratingSpinner.getValueFactory().setValue(5);
                 userField.setStyle("");
                 ratingSpinner.getEditor().setStyle("");
-                // commentField.setStyle(""); // si activas la validación de comentario
 
                 // Actualizar el promedio en el título
                 List<String> updatedReviews = reviews.getOrDefault(movie, new ArrayList<>());
@@ -213,23 +274,27 @@ public class SubscriberWindow extends Application implements Subscriber {
                 String newAvgText = newCount > 0 ? String.format(" [%.1f/10]", newAvg / newCount) : " [N/A]";
                 title.setText(movie.getTitle() + newAvgText);
 
-                // Opcional: también puedes actualizar el grid si quieres que el promedio se vea actualizado ahí
                 showMovieGrid();
-                // Pero vuelve a mostrar el detalle de la película actual
                 showMovieDetail(movie);
             }
         };
 
         addBtn.setOnAction(e -> submitComment.run());
-
-        // Permitir enviar con Enter desde cualquier campo
         userField.setOnAction(e -> submitComment.run());
         commentField.setOnAction(e -> submitComment.run());
         ratingSpinner.getEditor().setOnAction(e -> submitComment.run());
 
-        commentInput.getChildren().addAll(userField, commentField, ratingSpinner, addBtn);
+        commentInput.getChildren().addAll(userField, ratingSpinner, commentField, addBtn);
+        reviewForm.getChildren().addAll(new Label("💬 Agregar tu Reseña"), commentInput);
 
-        detailBox.getChildren().addAll(title, commentList, commentInput);
+        detailBox.getChildren().clear();
+        detailBox.getChildren().add(titleBox);
+        detailBox.getChildren().add(metaBox); // recuadro azul
+        if (posterView != null) {
+            detailBox.getChildren().add(posterView);
+        }
+        detailBox.getChildren().add(descBox); // recuadro verde
+        detailBox.getChildren().addAll(statsBox, commentList, reviewForm);
 
         root.setCenter(detailBox);
     }
@@ -252,9 +317,5 @@ public class SubscriberWindow extends Application implements Subscriber {
 
     public List<Movie> getMovies() {
         return movies;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
