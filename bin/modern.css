@@ -1,10 +1,8 @@
-/* Fondo general oscuro y elegante */
 .subscriber-root {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #181c24 0%, #23272f 100%);
     -fx-padding: 0;
 }
 
-/* Panel superior de usuario */
 .sidebar {
     -fx-background-color: #23272f;
     -fx-border-radius: 18;
@@ -15,7 +13,6 @@
     -fx-margin: 0 0 18 0;
 }
 
-/* Título de sección */
 .sidebar-title {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
@@ -24,19 +21,16 @@
     -fx-letter-spacing: 1.5px;
 }
 
-/* Etiquetas y textos secundarios */
 .stat-label, .meta-label, .desc-label {
     -fx-font-size: 15px;
     -fx-font-weight: 600;
     -fx-text-fill: #b0b3b8;
 }
 
-/* Etiquetas con texto blanco */
 .white-label {
     -fx-text-fill: #fff;
 }
 
-/* Botones principales */
 .btn-primary, .add-review-btn {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e50914 0%, #b0060f 100%);
     -fx-text-fill: #fff;
@@ -58,7 +52,6 @@
     -fx-effect: dropshadow(gaussian, #e5091444, 12, 0.3, 0, 4);
 }
 
-/* Campos de entrada */
 .input-field {
     -fx-background-color: #23272f;
     -fx-border-radius: 10;
@@ -71,7 +64,6 @@
     -fx-effect: dropshadow(gaussian, #00000022, 2, 0.1, 0, 1);
 }
 
-/* Spinner de rating */
 .rating-spinner {
     -fx-background-color: #23272f;
     -fx-border-radius: 8;
@@ -81,14 +73,12 @@
     -fx-text-fill: #fff;
 }
 
-/* Grid de películas */
 .movie-grid {
     -fx-padding: 32 0 0 32;
     -fx-hgap: 36;
     -fx-vgap: 36;
 }
 
-/* Tarjeta de película */
 .movie-card {
     -fx-background-color: #23272f;
     -fx-border-radius: 18;
@@ -114,7 +104,6 @@
     -fx-effect: dropshadow(gaussian, #e5091444, 20, 0.4, 0, 8);
 }
 
-/* Imagen cuadrada de la película */
 .movie-poster {
     -fx-background-radius: 18 18 18 18;
     -fx-border-radius: 18 18 18 18;
@@ -129,7 +118,6 @@
     -fx-effect: dropshadow(gaussian, #00000066, 8, 0.2, 0, 2);
 }
 
-/* Título y calificación debajo de la imagen */
 .movie-title-label {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
@@ -150,7 +138,6 @@
     -fx-margin: 10 0 0 0;
 }
 
-/* Detalle de película */
 .movie-detail-card {
     -fx-background-color: #23272f;
     -fx-border-radius: 20;
@@ -160,7 +147,6 @@
     -fx-spacing: 18;
 }
 
-/* Título en detalle */
 .movie-title {
     -fx-font-size: 26px;
     -fx-font-weight: bold;
@@ -168,7 +154,6 @@
     -fx-letter-spacing: 1px;
 }
 
-/* Calificación en detalle */
 .movie-rating {
     -fx-background-color: #e50914;
     -fx-text-fill: #fff;
@@ -180,7 +165,6 @@
     -fx-margin: 10 0 10 0;
 }
 
-/* Caja de información de película */
 .blue-box {
     -fx-background-color: #23272f;
     -fx-border-color: #e50914;
@@ -193,7 +177,6 @@
     -fx-max-width: 350;
 }
 
-/* Caja de descripción */
 .green-box {
     -fx-background-color: #181c24;
     -fx-border-color: #388e3c;
@@ -206,7 +189,6 @@
     -fx-margin: 10 0 10 0;
 }
 
-/* Lista de reseñas */
 .review-list {
     -fx-background-color: #23272f;
     -fx-border-radius: 10;
@@ -216,7 +198,6 @@
     -fx-spacing: 10;
 }
 
-/* Formulario de reseña */
 .review-form {
     -fx-background-color: #181c24;
     -fx-border-radius: 12;
@@ -225,24 +206,20 @@
     -fx-spacing: 10;
 }
 
-/* Separador */
 .separator {
     -fx-background-color: #444950;
     -fx-padding: 8 0 8 0;
 }
 
-/* ScrollPane */
 .scroll-pane {
     -fx-background: transparent;
     -fx-background-color: transparent;
 }
 
-/* Ajustes generales */
 .label {
     -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
 }
 
-/* Make combo box text white for genres and distributors */
 .combo-box .list-cell {
     -fx-text-fill: white;
 }
@@ -251,7 +228,6 @@
     -fx-text-fill: white;
 }
 
-/* Make combo box dropdown items visible */
 .combo-box-popup .list-view .list-cell {
     -fx-text-fill: black;
     -fx-background-color: white;
@@ -261,21 +237,42 @@
     -fx-background-color: #e3f2fd;
 }
 
-/* Make description text area have dark background with white text */
 .input-field.text-area {
     -fx-control-inner-background: #2d3748;
     -fx-text-fill: white;
     -fx-prompt-text-fill: #a0aec0;
 }
 
-/* Ensure all input fields have proper styling */
 .input-field {
     -fx-control-inner-background: #2d3748;
     -fx-text-fill: white;
     -fx-prompt-text-fill: #a0aec0;
 }
 
-/* Make sure combo box selected text is white */
+.combo-box .text-field {
+    -fx-text-fill: white;
+}
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: black;
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #e3f2fd;
+}
+
+.input-field.text-area {
+    -fx-control-inner-background: #2d3748;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #a0aec0;
+}
+
+.input-field {
+    -fx-control-inner-background: #2d3748;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #a0aec0;
+}
+
 .combo-box .text-field {
     -fx-text-fill: white;
 }
