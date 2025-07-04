@@ -1,163 +1,238 @@
+/* Fondo general oscuro y elegante */
 .subscriber-root {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #181c24 0%, #23272f 100%);
+    -fx-padding: 0;
 }
 
+/* Panel superior de usuario */
 .sidebar {
-    -fx-background-color: white;
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
-    -fx-effect: dropshadow(gaussian, #00000022, 10, 0.2, 0, 4);
+    -fx-background-color: #23272f;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, #00000044, 10, 0.2, 0, 4);
+    -fx-padding: 24 32 24 32;
+    -fx-spacing: 18;
+    -fx-margin: 0 0 18 0;
 }
 
+/* Título de sección */
 .sidebar-title {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 10 0;
-    -fx-text-fill: #4facfe;
-}
-
-.movie-list-btn {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f8f9fa 0%, #e9ecef 100%);
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-border-color: #e1e8ed;
-    -fx-text-fill: #333;
-    -fx-effect: dropshadow(gaussian, #00000011, 4, 0.1, 0, 2);
-}
-
-.movie-list-btn:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4facfe 0%, #00f2fe 100%);
-    -fx-text-fill: white;
-}
-
-.movie-detail-card {
-    -fx-background-color: white;
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
-    -fx-effect: dropshadow(gaussian, #00000022, 10, 0.2, 0, 4);
-    -fx-padding: 30;
-}
-
-.movie-title {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #e50914;
+    -fx-padding: 0 0 10 0;
+    -fx-letter-spacing: 1.5px;
 }
 
-.movie-rating {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b 0%, #ee5a52 100%);
-    -fx-text-fill: white;
-    -fx-padding: 4 14 4 14;
-    -fx-border-radius: 15;
-    -fx-background-radius: 15;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-}
-
-.stat-label {
-    -fx-font-size: 14px;
+/* Etiquetas y textos secundarios */
+.stat-label, .meta-label, .desc-label {
+    -fx-font-size: 15px;
     -fx-font-weight: 600;
-    -fx-text-fill: #666;
+    -fx-text-fill: #b0b3b8;
 }
 
-.review-list {
-    -fx-background-color: #f8f9fa;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-border-color: #e1e8ed;
-    -fx-padding: 10;
-}
-
-.review-form {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #a8edea 0%, #fed6e3 100%);
-    -fx-border-radius: 15;
-    -fx-background-radius: 15;
-    -fx-padding: 20;
-}
-
-.input-field {
-    -fx-background-color: #f8f9fa;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-border-color: #e1e8ed;
-    -fx-font-size: 16px;
-    -fx-padding: 12 16 12 16;
-    -fx-pref-width: 180;
-}
-
-.rating-spinner {
-    -fx-background-color: #fffbe7;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-color: #ffd700;
-    -fx-font-size: 16px;
-}
-
-.btn-primary {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4facfe 0%, #00f2fe 100%);
-    -fx-text-fill: white;
+/* Botones principales */
+.btn-primary, .add-review-btn {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e50914 0%, #b0060f 100%);
+    -fx-text-fill: #fff;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-font-size: 16px;
     -fx-font-weight: 600;
-    -fx-padding: 12 0 12 0;
+    -fx-padding: 12 28 12 28;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #e5091444, 8, 0.2, 0, 2);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-transition: all 0.2s;
+}
+.btn-primary:hover, .add-review-btn:hover {
+    -fx-background-color: #fff;
+    -fx-text-fill: #e50914;
+    -fx-border-color: #e50914;
+    -fx-effect: dropshadow(gaussian, #e5091444, 12, 0.3, 0, 4);
 }
 
-.btn-primary:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00f2fe 0%, #4facfe 100%);
-    -fx-effect: dropshadow(gaussian, #4facfe44, 10, 0.2, 0, 2);
-}
-
-
-.add-review-btn {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b 0%, #ee5a52 100%);
-    -fx-text-fill: white;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+/* Campos de entrada */
+.input-field {
+    -fx-background-color: #23272f;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-color: #444950;
     -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-padding: 8 20 8 20;
+    -fx-text-fill: #fff;
+    -fx-padding: 10 16 10 16;
+    -fx-pref-width: 180;
+    -fx-effect: dropshadow(gaussian, #00000022, 2, 0.1, 0, 1);
 }
 
-.add-review-btn:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ee5a52 0%, #ff6b6b 100%);
-}
-
-.blue-box {
-    -fx-background-color: #2196f3;
-    -fx-border-color: #1976d2;
-    -fx-border-width: 2;
+/* Spinner de rating */
+.rating-spinner {
+    -fx-background-color: #23272f;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
-    -fx-padding: 10;
-    -fx-spacing: 15;
-    -fx-min-width: 300;
-    -fx-max-width: 500;
+    -fx-border-color: #e50914;
+    -fx-font-size: 16px;
+    -fx-text-fill: #fff;
 }
 
+/* Grid de películas */
+.movie-grid {
+    -fx-padding: 32 0 0 32;
+    -fx-hgap: 36;
+    -fx-vgap: 36;
+}
+
+/* Tarjeta de película */
+.movie-card {
+    -fx-background-color: #23272f;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, #00000099, 16, 0.3, 0, 6);
+    -fx-padding: 0;
+    -fx-min-width: 180;
+    -fx-min-height: 260;
+    -fx-max-width: 220;
+    -fx-max-height: 320;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-spacing: 0;
+    -fx-border-color: #2d313a;
+    -fx-border-width: 2;
+    -fx-transition: scale 0.2s;
+    -fx-overflow: hidden;
+}
+.movie-card:hover {
+    -fx-background-color: #292d36;
+    -fx-scale-x: 1.06;
+    -fx-scale-y: 1.06;
+    -fx-effect: dropshadow(gaussian, #e5091444, 20, 0.4, 0, 8);
+}
+
+/* Imagen cuadrada de la película */
+.movie-poster {
+    -fx-background-radius: 18 18 18 18;
+    -fx-border-radius: 18 18 18 18;
+    -fx-min-width: 180;
+    -fx-min-height: 180;
+    -fx-max-width: 180;
+    -fx-max-height: 180;
+    -fx-alignment: center;
+    -fx-background-color: #181c24;
+    -fx-border-color: #2d313a;
+    -fx-border-width: 0 0 2 0;
+    -fx-effect: dropshadow(gaussian, #00000066, 8, 0.2, 0, 2);
+}
+
+/* Título y calificación debajo de la imagen */
+.movie-title-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+    -fx-padding: 14 0 0 0;
+    -fx-alignment: center;
+    -fx-letter-spacing: 0.5px;
+}
+.movie-rating-label {
+    -fx-background-color: #e50914;
+    -fx-text-fill: #fff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 16 4 16;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-alignment: center;
+    -fx-margin: 10 0 0 0;
+}
+
+/* Detalle de película */
+.movie-detail-card {
+    -fx-background-color: #23272f;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, #00000088, 10, 0.2, 0, 4);
+    -fx-padding: 36 36 36 36;
+    -fx-spacing: 18;
+}
+
+/* Título en detalle */
+.movie-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+    -fx-letter-spacing: 1px;
+}
+
+/* Calificación en detalle */
+.movie-rating {
+    -fx-background-color: #e50914;
+    -fx-text-fill: #fff;
+    -fx-padding: 6 18 6 18;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-margin: 10 0 10 0;
+}
+
+/* Caja de información de película */
+.blue-box {
+    -fx-background-color: #23272f;
+    -fx-border-color: #e50914;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 18 12 18;
+    -fx-spacing: 8;
+    -fx-min-width: 220;
+    -fx-max-width: 350;
+}
+
+/* Caja de descripción */
 .green-box {
-    -fx-background-color: #e8f5e9;
+    -fx-background-color: #181c24;
     -fx-border-color: #388e3c;
     -fx-border-width: 2;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 15;
-    -fx-min-width: 300;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 14 18 14 18;
+    -fx-min-width: 220;
     -fx-max-width: 500;
     -fx-margin: 10 0 10 0;
 }
 
-.meta-label {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
+/* Lista de reseñas */
+.review-list {
+    -fx-background-color: #23272f;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-color: #444950;
+    -fx-padding: 14 18 14 18;
+    -fx-spacing: 10;
 }
 
-.desc-label {
-    -fx-text-fill: #388e3c;
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
+/* Formulario de reseña */
+.review-form {
+    -fx-background-color: #181c24;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 18 18 18 18;
+    -fx-spacing: 10;
+}
+
+/* Separador */
+.separator {
+    -fx-background-color: #444950;
+    -fx-padding: 8 0 8 0;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+/* Ajustes generales */
+.label {
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
 }
