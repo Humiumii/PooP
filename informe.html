@@ -260,19 +260,21 @@
 
             <h3>5.3 Estructura del Código</h3>
             <div class="code-block">
-src/
-├── Main.java                 // Clase principal de la aplicación
-├── Movie.java               // Modelo de película con reseñas
-├── Publisher.java           // Interfaz Publisher
-├── Subscriber.java          // Interfaz Subscriber
-├── MoviePublisher.java      // Implementación del Publisher
-├── SubscriberWindow.java    // GUI y lógica del Subscriber
-├── PublisherWindow.java     // GUI del Publisher
-├── UserManager.java         // Gestión de usuarios (Singleton)
-├── MovieStorage.java        // Almacenamiento global (Singleton)
-├── User.java               // Clase de usuario
-├── Distributor.java        // Gestión de distribuidoras
-└── modern.css              // Estilos de la aplicación
+                <div style="font-family: 'Courier New', monospace; line-height: 1.4;">
+                    src/<br>
+                    ├── Main.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Clase principal de la aplicación<br>
+                    ├── Movie.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Modelo de película con reseñas<br>
+                    ├── Publisher.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Interfaz Publisher<br>
+                    ├── Subscriber.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Interfaz Subscriber<br>
+                    ├── MoviePublisher.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Implementación del Publisher<br>
+                    ├── SubscriberWindow.java&nbsp;&nbsp;&nbsp;&nbsp;// GUI y lógica del Subscriber<br>
+                    ├── PublisherWindow.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// GUI del Publisher<br>
+                    ├── UserManager.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Gestión de usuarios (Singleton)<br>
+                    ├── MovieStorage.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Almacenamiento global (Singleton)<br>
+                    ├── User.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Clase de usuario<br>
+                    ├── Distributor.java&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Gestión de distribuidoras<br>
+                    └── modern.css&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Estilos de la aplicación
+                </div>
             </div>
         </div>
 
@@ -372,11 +374,17 @@ src/
 
             <h3>8.3 Instrucciones de Ejecución</h3>
             <div class="code-block">
-# Compilar el proyecto
-javac -cp "path/to/javafx/lib/*" *.java
-
-# Ejecutar la aplicación
-java -cp ".:path/to/javafx/lib/*" --module-path "path/to/javafx/lib" --add-modules javafx.controls,javafx.fxml Main
+                <div style="line-height: 1.8;">
+                    <strong>ANTES DE COMPILAR</strong><br>
+                    • Asegurarse de colocar la ruta donde se tiene guardado las librerías para el uso de JavaFX en el archivo makefile<br>
+                    • Cambiar la variable PATH_TO_FX: "ruta"<br>
+                    • La ruta debe estar cerrada entre comillas " "<br>
+                    • EJEMPLO: PATH_TO_FX="C:/Program Files/Java/jdk-24/javafx-sdk-24.0.1/lib"<br>
+                    • Compilado en git bash<br><br>
+                    
+                    <strong>COMPILAR</strong><br>
+                    • Escribir por consola "make all"
+                </div>
             </div>
         </div>
 
