@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Publisher-Subscriber de Películas - Informe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .use-case {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .screenshot {
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-width: 100%;
+        }
+        .feature-list {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        .difficulty {
+            background-color: #fdf2e9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #e67e22;
+        }
+        .uml-diagram {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        .team-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema Publisher-Subscriber de Películas</h1>
+        
+        <div class="team-info">
+            <h3>Información del Proyecto</h3>
+            <p><strong>Desarrollado por:</strong> [Nombres del equipo]</p>
+            <p><strong>Tecnología:</strong> JavaFX</p>
+            <p><strong>Patrón de diseño:</strong> Publisher-Subscriber</p>
+            <p><strong>Fecha:</strong> [Fecha de entrega]</p>
+        </div>
+
+        <div class="section">
+            <h2>1. Descripción del Problema</h2>
+            <p>
+                El proyecto consiste en desarrollar un sistema de distribución de películas que implementa el patrón Publisher-Subscriber. 
+                El sistema permite a las distribuidoras (publishers) publicar películas y a los usuarios (subscribers) suscribirse a 
+                distribuidoras específicas para recibir notificaciones de nuevas películas. Los usuarios pueden calificar y reseñar las 
+                películas de las distribuidoras a las que están suscritos. El sistema gestiona múltiples usuarios, sus suscripciones 
+                individuales y mantiene un registro de todas las reseñas y calificaciones de manera persistente durante la sesión.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>2. Análisis del Problema</h2>
+            
+            <h3>2.1 Entidades Principales</h3>
+            <ul>
+                <li><strong>Movie:</strong> Representa una película con título, género, año, descripción, imagen, distribuidora y reseñas</li>
+                <li><strong>Publisher:</strong> Entidad que publica películas (distribuidoras)</li>
+                <li><strong>Subscriber:</strong> Usuarios que se suscriben a distribuidoras para recibir películas</li>
+                <li><strong>Distributor:</strong> Compañías distribuidoras de películas (Netflix, Disney, etc.)</li>
+                <li><strong>User:</strong> Usuarios individuales del sistema con sus propias suscripciones</li>
+                <li><strong>Review:</strong> Reseñas y calificaciones de películas</li>
+            </ul>
+
+            <h3>2.2 Interacciones del Sistema</h3>
+            <div class="feature-list">
+                <h4>Funcionalidades Principales:</h4>
+                <ul>
+                    <li><strong>Publicación de películas:</strong> Las distribuidoras pueden agregar nuevas películas al sistema</li>
+                    <li><strong>Suscripciones:</strong> Los usuarios pueden suscribirse/desuscribirse a distribuidoras</li>
+                    <li><strong>Notificaciones:</strong> Los usuarios reciben notificaciones solo de las distribuidoras a las que están suscritos</li>
+                    <li><strong>Sistema de reseñas:</strong> Los usuarios pueden calificar (1-10) y comentar películas</li>
+                    <li><strong>Gestión de usuarios:</strong> Login/logout con persistencia de suscripciones por usuario</li>
+                    <li><strong>Filtrado de contenido:</strong> Los usuarios solo ven películas de sus suscripciones</li>
+                </ul>
+            </div>
+
+            <h3>2.3 Interacciones con el Medio Externo</h3>
+            <ul>
+                <li><strong>Interfaz de Usuario:</strong> JavaFX proporciona ventanas separadas para Publisher y Subscriber</li>
+                <li><strong>Gestión de Archivos:</strong> Sistema de selección de imágenes para películas</li>
+                <li><strong>Persistencia de Sesión:</strong> Mantiene estado de usuarios y suscripciones durante la ejecución</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. Definición de Requerimientos</h2>
+            
+            <h3>3.1 Casos de Uso</h3>
+            
+            <div class="use-case">
+                <h4>Caso de Uso 1: Publicar una Película</h4>
+                <p><strong>Actor:</strong> Distribuidora (Publisher)</p>
+                <p><strong>Descripción:</strong> La distribuidora publica una nueva película en el sistema</p>
+                <p><strong>Flujo Principal:</strong></p>
+                <ol>
+                    <li>La distribuidora accede a la ventana de publicación</li>
+                    <li>Completa los datos de la película (título, género, año, descripción, imagen)</li>
+                    <li>Selecciona la distribuidora responsable</li>
+                    <li>Publica la película</li>
+                    <li>El sistema notifica automáticamente a los usuarios suscritos a esa distribuidora</li>
+                </ol>
+            </div>
+
+            <div class="use-case">
+                <h4>Caso de Uso 2: Suscribirse a una Distribuidora</h4>
+                <p><strong>Actor:</strong> Usuario (Subscriber)</p>
+                <p><strong>Descripción:</strong> Un usuario se suscribe a una distribuidora para recibir sus películas</p>
+                <p><strong>Flujo Principal:</strong></p>
+                <ol>
+                    <li>El usuario inicia sesión en el sistema</li>
+                    <li>Navega a la pestaña de "Suscripciones"</li>
+                    <li>Selecciona una distribuidora disponible</li>
+                    <li>Confirma la suscripción</li>
+                    <li>El sistema actualiza sus suscripciones y muestra las películas disponibles</li>
+                </ol>
+            </div>
+
+            <div class="use-case">
+                <h4>Caso de Uso 3: Agregar Reseña a una Película</h4>
+                <p><strong>Actor:</strong> Usuario autenticado</p>
+                <p><strong>Descripción:</strong> Un usuario logueado agrega una reseña y calificación a una película</p>
+                <p><strong>Flujo Principal:</strong></p>
+                <ol>
+                    <li>El usuario visualiza una película de sus suscripciones</li>
+                    <li>Selecciona una calificación del 1 al 10</li>
+                    <li>Escribe un comentario sobre la película</li>
+                    <li>Envía la reseña</li>
+                    <li>El sistema actualiza la calificación promedio y muestra la reseña</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Diseño</h2>
+            
+            <h3>4.1 Diagrama de Clases</h3>
+            <div class="uml-diagram">
+@startuml
+class Movie {
+    -String title
+    -String imageUrl
+    -String genre
+    -String year
+    -String description
+    -String distributor
+    -List<Review> reviews
+    +Movie(title, imageUrl, genre, year, description, distributor)
+    +addReview(comment, rating, username)
+    +getAverageRating(): double
+    +getReviewCount(): int
+}
+
+class Review {
+    -String comment
+    -int rating
+    -String username
+    +Review(comment, rating, username)
+    +getComment(): String
+    +getRating(): int
+    +getUsername(): String
+}
+
+interface Publisher {
+    +subscribe(Subscriber)
+    +unsubscribe(Subscriber)
+    +publish(Movie)
+}
+
+interface Subscriber {
+    +notify(Movie)
+    +addReview(Movie, String, int)
+    +subscribeToDistributor(String)
+    +unsubscribeFromDistributor(String)
+    +getSubscribedDistributors(): Set<String>
+    +canViewMovie(Movie): boolean
+}
+
+class MoviePublisher implements Publisher {
+    -List<Subscriber> subscribers
+    +subscribe(Subscriber)
+    +unsubscribe(Subscriber)
+    +publish(Movie)
+    +getMoviesForSubscriber(Subscriber, List<Movie>): List<Movie>
+}
+
+class SubscriberWindow implements Subscriber {
+    -String name
+    -Map<Movie, List<String>> reviews
+    -List<Movie> allMovies
+    -VBox moviesContainer
+    -UserManager userManager
+    +notify(Movie)
+    +addReview(Movie, String, int)
+    +subscribeToDistributor(String)
+    +canViewMovie(Movie): boolean
+}
+
+class UserManager {
+    -static UserManager instance
+    -Set<String> registeredUsers
+    -String currentUser
+    -Map<String, Set<String>> userSubscriptions
+    +getInstance(): UserManager
+    +login(String): boolean
+    +logout()
+    +getCurrentUser(): String
+    +subscribeCurrentUserToDistributor(String)
+    +isCurrentUserSubscribedTo(String): boolean
+}
+
+class MovieStorage {
+    -static MovieStorage instance
+    -List<Movie> allMovies
+    +getInstance(): MovieStorage
+    +addMovie(Movie)
+    +getAllMovies(): List<Movie>
+    +getMoviesForDistributor(String): List<Movie>
+}
+
+class Distributor {
+    -static List<String> availableDistributors
+    +getAvailableDistributors(): List<String>
+    +addDistributor(String)
+    +isValidDistributor(String): boolean
+}
+
+Movie *-- Review
+MoviePublisher --> Subscriber
+MoviePublisher --> Movie
+SubscriberWindow --> UserManager
+SubscriberWindow --> MovieStorage
+MovieStorage --> Movie
+UserManager --> Distributor
+@enduml
+            </div>
+
+            <h3>4.2 Diagrama de Secuencia - Publicar Película</h3>
+            <div class="uml-diagram">
+@startuml
+actor Distribuidora
+participant PublisherWindow
+participant MoviePublisher
+participant MovieStorage
+participant SubscriberWindow
+participant UserManager
+
+Distribuidora -> PublisherWindow: Completar datos película
+PublisherWindow -> PublisherWindow: Validar datos
+PublisherWindow -> MoviePublisher: publish(movie)
+MoviePublisher -> MovieStorage: addMovie(movie)
+MovieStorage -> MovieStorage: Almacenar película
+MoviePublisher -> SubscriberWindow: notify(movie)
+SubscriberWindow -> UserManager: isCurrentUserSubscribedTo(distributor)
+UserManager -> SubscriberWindow: true/false
+alt Usuario suscrito
+    SubscriberWindow -> SubscriberWindow: Mostrar película
+    SubscriberWindow -> SubscriberWindow: updateMoviesView()
+else Usuario no suscrito
+    SubscriberWindow -> SubscriberWindow: No mostrar película
+end
+@enduml
+            </div>
+
+            <h3>4.3 Arquitectura del Sistema</h3>
+            <p>El sistema sigue una arquitectura por capas:</p>
+            <ul>
+                <li><strong>Capa de Presentación:</strong> PublisherWindow, SubscriberWindow (JavaFX)</li>
+                <li><strong>Capa de Lógica de Negocio:</strong> MoviePublisher, UserManager, Distributor</li>
+                <li><strong>Capa de Datos:</strong> MovieStorage, Movie, Review</li>
+                <li><strong>Capa de Interfaz:</strong> Publisher, Subscriber (interfaces)</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>5. Implementación</h2>
+            
+            <h3>5.1 Patrones de Diseño Utilizados</h3>
+            <ul>
+                <li><strong>Publisher-Subscriber:</strong> Patrón principal para notificaciones de películas</li>
+                <li><strong>Singleton:</strong> UserManager y MovieStorage para gestión centralizada</li>
+                <li><strong>Observer:</strong> Implementado a través del patrón Publisher-Subscriber</li>
+            </ul>
+
+            <h3>5.2 Características Técnicas</h3>
+            <div class="feature-list">
+                <h4>Tecnologías y Herramientas:</h4>
+                <ul>
+                    <li><strong>JavaFX:</strong> Framework para interfaces gráficas</li>
+                    <li><strong>Java Collections:</strong> Para manejo de listas y mapas</li>
+                    <li><strong>CSS:</strong> Estilos personalizados (modern.css)</li>
+                    <li><strong>FileChooser:</strong> Selección de imágenes</li>
+                    <li><strong>Streams API:</strong> Para cálculos de promedios</li>
+                </ul>
+            </div>
+
+            <h3>5.3 Estructura del Código</h3>
+            <div class="code-block">
+src/
+├── Main.java                 // Clase principal de la aplicación
+├── Movie.java               // Modelo de película con reseñas
+├── Publisher.java           // Interfaz Publisher
+├── Subscriber.java          // Interfaz Subscriber
+├── MoviePublisher.java      // Implementación del Publisher
+├── SubscriberWindow.java    // GUI y lógica del Subscriber
+├── PublisherWindow.java     // GUI del Publisher
+├── UserManager.java         // Gestión de usuarios (Singleton)
+├── MovieStorage.java        // Almacenamiento global (Singleton)
+├── User.java               // Clase de usuario
+├── Distributor.java        // Gestión de distribuidoras
+└── modern.css              // Estilos de la aplicación
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>6. Pruebas</h2>
+            
+            <h3>6.1 Prueba del Caso de Uso 1: Publicar Película</h3>
+            <div class="diagram">
+                <h4>Ventana del Publisher</h4>
+                <div style="border: 2px solid #3498db; padding: 20px; margin: 10px 0; background-color: #f8f9fa;">
+                    <p><strong>Captura:</strong> [Aquí iría una captura de pantalla de la ventana de publicación]</p>
+                    <p><em>Descripción:</em> La ventana del Publisher permite ingresar todos los datos de la película incluyendo título, género, año, descripción, imagen y distribuidora. Al completar todos los campos y presionar "Publicar Película", el sistema valida los datos y notifica automáticamente a los usuarios suscritos.</p>
+                </div>
+            </div>
+
+            <h3>6.2 Prueba del Caso de Uso 2: Suscripción a Distribuidora</h3>
+            <div class="diagram">
+                <h4>Gestión de Suscripciones</h4>
+                <div style="border: 2px solid #27ae60; padding: 20px; margin: 10px 0; background-color: #f8f9fa;">
+                    <p><strong>Captura:</strong> [Aquí iría una captura de pantalla de la pestaña de suscripciones]</p>
+                    <p><em>Descripción:</em> La pestaña de suscripciones muestra todas las distribuidoras disponibles y permite al usuario suscribirse. Una vez suscrito, aparece en la sección "Mis Suscripciones" con opción de desuscribirse.</p>
+                </div>
+            </div>
+
+            <h3>6.3 Prueba del Caso de Uso 3: Agregar Reseña</h3>
+            <div class="diagram">
+                <h4>Sistema de Reseñas</h4>
+                <div style="border: 2px solid #e74c3c; padding: 20px; margin: 10px 0; background-color: #f8f9fa;">
+                    <p><strong>Captura:</strong> [Aquí iría una captura de pantalla del sistema de reseñas]</p>
+                    <p><em>Descripción:</em> Los usuarios autenticados pueden agregar reseñas con calificaciones del 1 al 10. El sistema muestra el promedio de calificaciones y todas las reseñas con el nombre del usuario que las escribió.</p>
+                </div>
+            </div>
+
+            <h3>6.4 Dificultades Encontradas</h3>
+            <div class="difficulty">
+                <h4>Principales Desafíos:</h4>
+                <ul>
+                    <li><strong>Gestión de Estado:</strong> Mantener sincronizadas las suscripciones entre usuarios
+                        <br><em>Solución:</em> Implementación del patrón Singleton para UserManager</li>
+                    <li><strong>Filtrado de Contenido:</strong> Mostrar solo películas de distribuidoras suscritas
+                        <br><em>Solución:</em> Método canViewMovie() que verifica suscripciones</li>
+                    <li><strong>Persistencia de Reseñas:</strong> Asociar reseñas con usuarios específicos
+                        <br><em>Solución:</em> Sistema de autenticación y Review class con username</li>
+                    <li><strong>Interfaz Responsive:</strong> Adaptar la GUI a diferentes tamaños de ventana
+                        <br><em>Solución:</em> ScrollPane y layouts flexibles</li>
+                </ul>
+            </div>
+
+            <h3>6.5 Bugs Conocidos</h3>
+            <ul>
+                <li><strong>Ninguno reportado:</strong> El sistema funciona correctamente según las pruebas realizadas</li>
+                <li><strong>Limitación:</strong> Los datos no persisten entre ejecuciones del programa</li>
+                <li><strong>Mejora futura:</strong> Agregar base de datos para persistencia real</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>7. Conclusiones</h2>
+            
+            <h3>7.1 Objetivos Cumplidos</h3>
+            <ul>
+                <li>✅ Implementación exitosa del patrón Publisher-Subscriber</li>
+                <li>✅ Sistema completo de suscripciones por usuario</li>
+                <li>✅ Gestión de reseñas y calificaciones</li>
+                <li>✅ Interfaz gráfica intuitiva y funcional</li>
+                <li>✅ Filtrado de contenido según suscripciones</li>
+            </ul>
+
+            <h3>7.2 Aprendizajes</h3>
+            <ul>
+                <li>Aplicación práctica de patrones de diseño</li>
+                <li>Desarrollo de interfaces gráficas con JavaFX</li>
+                <li>Gestión de estado en aplicaciones</li>
+                <li>Implementación de sistemas de notificación</li>
+            </ul>
+
+            <h3>7.3 Trabajo Futuro</h3>
+            <ul>
+                <li>Integración con base de datos para persistencia</li>
+                <li>Implementación de sistema de recomendaciones</li>
+                <li>Mejoras en la interfaz de usuario</li>
+                <li>Funcionalidades adicionales como favoritos</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>8. Enlaces y Recursos</h2>
+            
+            <h3>8.1 Código Fuente</h3>
+            <p>📁 <a href="movie-system-src.zip">Descargar código fuente completo</a></p>
+            
+            <h3>8.2 Dependencias</h3>
+            <ul>
+                <li><strong>JavaFX:</strong> Incluido en JDK 8, módulo separado en JDK 11+</li>
+                <li><strong>Java 8+:</strong> Versión mínima requerida</li>
+            </ul>
+
+            <h3>8.3 Instrucciones de Ejecución</h3>
+            <div class="code-block">
+# Compilar el proyecto
+javac -cp "path/to/javafx/lib/*" *.java
+
+# Ejecutar la aplicación
+java -cp ".:path/to/javafx/lib/*" --module-path "path/to/javafx/lib" --add-modules javafx.controls,javafx.fxml Main
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; padding: 20px; background-color: #34495e; color: white; border-radius: 5px;">
+            <p><strong>Sistema Publisher-Subscriber de Películas</strong></p>
+            <p>Desarrollado con JavaFX | Patrón Publisher-Subscriber | [Año]</p>
+        </div>
+    </div>
+</body>
+</html>
