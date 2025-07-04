@@ -114,10 +114,10 @@
         
         <div class="team-info">
             <h3>Información del Proyecto</h3>
-            <p><strong>Desarrollado por:</strong> [Nombres del equipo]</p>
+            <p><strong>Desarrollado por:</strong> Diego Acevedo Santander, Ignacio Riquelme, Andres Riveros, Jeremy Zavala</p>
             <p><strong>Tecnología:</strong> JavaFX</p>
             <p><strong>Patrón de diseño:</strong> Publisher-Subscriber</p>
-            <p><strong>Fecha:</strong> [Fecha de entrega]</p>
+            <p><strong>Fecha:</strong> 04/07/2025</p>
         </div>
 
         <div class="section">
@@ -218,130 +218,12 @@
             
             <h3>4.1 Diagrama de Clases</h3>
             <div class="uml-diagram">
-@startuml
-class Movie {
-    -String title
-    -String imageUrl
-    -String genre
-    -String year
-    -String description
-    -String distributor
-    -List<Review> reviews
-    +Movie(title, imageUrl, genre, year, description, distributor)
-    +addReview(comment, rating, username)
-    +getAverageRating(): double
-    +getReviewCount(): int
-}
-
-class Review {
-    -String comment
-    -int rating
-    -String username
-    +Review(comment, rating, username)
-    +getComment(): String
-    +getRating(): int
-    +getUsername(): String
-}
-
-interface Publisher {
-    +subscribe(Subscriber)
-    +unsubscribe(Subscriber)
-    +publish(Movie)
-}
-
-interface Subscriber {
-    +notify(Movie)
-    +addReview(Movie, String, int)
-    +subscribeToDistributor(String)
-    +unsubscribeFromDistributor(String)
-    +getSubscribedDistributors(): Set<String>
-    +canViewMovie(Movie): boolean
-}
-
-class MoviePublisher implements Publisher {
-    -List<Subscriber> subscribers
-    +subscribe(Subscriber)
-    +unsubscribe(Subscriber)
-    +publish(Movie)
-    +getMoviesForSubscriber(Subscriber, List<Movie>): List<Movie>
-}
-
-class SubscriberWindow implements Subscriber {
-    -String name
-    -Map<Movie, List<String>> reviews
-    -List<Movie> allMovies
-    -VBox moviesContainer
-    -UserManager userManager
-    +notify(Movie)
-    +addReview(Movie, String, int)
-    +subscribeToDistributor(String)
-    +canViewMovie(Movie): boolean
-}
-
-class UserManager {
-    -static UserManager instance
-    -Set<String> registeredUsers
-    -String currentUser
-    -Map<String, Set<String>> userSubscriptions
-    +getInstance(): UserManager
-    +login(String): boolean
-    +logout()
-    +getCurrentUser(): String
-    +subscribeCurrentUserToDistributor(String)
-    +isCurrentUserSubscribedTo(String): boolean
-}
-
-class MovieStorage {
-    -static MovieStorage instance
-    -List<Movie> allMovies
-    +getInstance(): MovieStorage
-    +addMovie(Movie)
-    +getAllMovies(): List<Movie>
-    +getMoviesForDistributor(String): List<Movie>
-}
-
-class Distributor {
-    -static List<String> availableDistributors
-    +getAvailableDistributors(): List<String>
-    +addDistributor(String)
-    +isValidDistributor(String): boolean
-}
-
-Movie *-- Review
-MoviePublisher --> Subscriber
-MoviePublisher --> Movie
-SubscriberWindow --> UserManager
-SubscriberWindow --> MovieStorage
-MovieStorage --> Movie
-UserManager --> Distributor
-@enduml
+                <img src="uml.png" alt="Diagrama de Clases" style="max-width: 100%; height: auto;">
             </div>
 
             <h3>4.2 Diagrama de Secuencia - Publicar Película</h3>
             <div class="uml-diagram">
-@startuml
-actor Distribuidora
-participant PublisherWindow
-participant MoviePublisher
-participant MovieStorage
-participant SubscriberWindow
-participant UserManager
-
-Distribuidora -> PublisherWindow: Completar datos película
-PublisherWindow -> PublisherWindow: Validar datos
-PublisherWindow -> MoviePublisher: publish(movie)
-MoviePublisher -> MovieStorage: addMovie(movie)
-MovieStorage -> MovieStorage: Almacenar película
-MoviePublisher -> SubscriberWindow: notify(movie)
-SubscriberWindow -> UserManager: isCurrentUserSubscribedTo(distributor)
-UserManager -> SubscriberWindow: true/false
-alt Usuario suscrito
-    SubscriberWindow -> SubscriberWindow: Mostrar película
-    SubscriberWindow -> SubscriberWindow: updateMoviesView()
-else Usuario no suscrito
-    SubscriberWindow -> SubscriberWindow: No mostrar película
-end
-@enduml
+                <img src="Secuencia.png" alt="Diagrama de Secuencia - Publicar Película" style="max-width: 100%; height: auto;">
             </div>
 
             <h3>4.3 Arquitectura del Sistema</h3>
